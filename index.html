@@ -57,10 +57,11 @@
                             <div class="card card-microsite-eecb rounded-5 overflow-auto border-0 shadow mt-5"
                                 id="card2">
                                 <div class="img-card monte_img"></div>
-                                <h4 class="card-title bg-main-green px-3  text-center">Consulte estados de cuentas
+                                <h4 class="card-title bg-main-green px-3 text-center" id="titleCardLogin">
+                                    Consulte estados de cuentas
                                 </h4>
                                 <div class="card-body">
-                                    <div class="row">
+                                    <div class="row show" id="loginContainer">
                                         <div class="col-md-1"></div>
                                         <div class="col-md-10">
                                             <div class="search-container">
@@ -71,7 +72,7 @@
                                                         id="txt_EmailLogin">
                                                 </div>
                                             </div>
-                                            <div class="search-container mb-4">
+                                            <div class="search-container mb-2">
                                                 <div class="mb-1 text-center">
                                                     <label class="label-input w-100 text-center">Contraseña</label>
                                                     <input type="password" class="input-microsite text-center"
@@ -81,7 +82,16 @@
                                             </div>
                                         </div>
                                         <div class="col-md-1"></div>
+                                        <div class="col-md-12">
+                                            <div id="messageContainer_Login" class="messageContainer"></div>
+                                        </div>
                                         <div class="col-md-12 show-expanded">
+                                            <label class="help-text mb-4 nunito-light">
+                                                ¿Tienes problemas para ingresar?
+                                                <span id="btnResetView">
+                                                    Reestablecer contraseña
+                                                </span>
+                                            </label>
                                             <div class="d-block text-center">
                                                 <button class="btn-m btn-submit rounded-5 shadow" id="btnLogin"
                                                     type="button">
@@ -90,7 +100,51 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" id="resetPasswordContainer">
+                                        <label class="help-text mb-2 nunito-light" id="textHelp">
 
+                                        </label>
+                                        <div class="form px-3">
+                                            <div class="mb-4" id="step_reset1">
+                                                <div class="search-container">
+                                                    <div class="mb-1 text-center">
+                                                        <input type="text" class="input-microsite text-center"
+                                                            placeholder="--- Ingrese email ---" value=""
+                                                            id="txt_EmailReset">
+                                                    </div>
+                                                </div>
+                                                <div class="search-container">
+                                                    <div class="mb-1 text-center">
+                                                        <input type="text" class="input-microsite text-center"
+                                                            placeholder="--- Ingrese NIT ---" value=""
+                                                            id="txt_NitReset">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="step_reset2">
+                                                <div class="input-container">
+                                                    <label class="label-form">Código de seguridad</label>
+                                                    <div class="input-wrapper">
+                                                        <input type="text" class="input-form" id="txt_CodeReset"
+                                                            placeholder="Ingrese código">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="messageContainer_Reset" class="messageContainer">
+
+                                            </div>
+                                        </div>
+                                        <div class="d-block w-100 text-center mt-5">
+                                            <button class="btn-m btn-secondary rounded-5 shadow me-2 w-auto"
+                                                id="btnBackViewLogin" type="button">
+                                                Volver
+                                            </button>
+                                            <button class="btn-m btn-submit rounded-5 shadow" id="btnResetPassword"
+                                                type="button">
+                                                Reestablecer
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +161,7 @@
                                         <label class="label-form">Número de NIT</label>
                                         <div class="input-wrapper">
                                             <input type="text" class="input-form" id="txt_NIT"
-                                                placeholder="Ingrese  el número de NIT de la entidad">
+                                                placeholder="Ingrese el número de NIT de la entidad">
                                             <div class="info-icon">
                                                 !
                                                 <div class="tooltip-field">Campo requerido</div>

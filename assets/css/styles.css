@@ -12,7 +12,7 @@ body{position:relative}
 .nunito-extra-bold{font-family:nunitoExtraBold,sans-serif!important}
 .nunito-bold{font-family:nunitoBold,sans-serif!important}
 .nunito-regular{font-family:nunitoRegular,sans-serif!important}
-.nunito-ligh{font-family:nunitoLight,sans-serif!important}
+.nunito-light{font-family:nunitoLight,sans-serif!important}
 .din-bold{font-family:dinFontBold,sans-serif!important}
 .din-regular{font-family:dinFontRegular,sans-serif!important}
 .din-light{font-family:dinFontLight,sans-serif!important}
@@ -31,7 +31,7 @@ body{position:relative}
 #arrowMap{width:60px;height:60px;position:absolute;left:34%;top:43%}
 .card-microsite-eecb .img-card{width:100%;height:150px;background-size:100%;background-position:100% 30%}
 .card-microsite-eecb .btn-submit{background-color:var(--main-green);color:#fff;font-size:20px;padding:10px 2.5rem;outline:0;border:none;margin:auto;font-weight:200!important}
-.card-microsite-eecb .btn-secondary{padding:10px 2.5rem;font-size:20px}
+.card-microsite-eecb .btn-secondary{padding:10px 2.5rem;font-size:20px;background-color:#b9bfcf}
 .palmas_img{background-image:url(../../resources/pensionados.jpg)}
 .monte_img{background-image:url(../../resources/pensionados-foncep.jpg);background-position:center}
 .card-microsite-eecb{transition:height .3s ease;height:auto;position:relative}
@@ -160,3 +160,10 @@ body{position:relative}
 #manageModule .fileStateAccounts .label-file{padding:2px 20px;box-sizing:border-box;margin:10px auto;width:auto}
 #manageModule .fileStateAccounts .label-file .info-file{text-align:justify!important}
 #entitiesLoad{max-height:300px;overflow:auto}
+.card-microsite-eecb .help-text{width:100%;display:block;text-align:center;color:#474747;font-family:nunitoLight,sans-serif!important}
+.card-microsite-eecb .help-text span{font-family:nunitoExtraBold,sans-serif!important;cursor:pointer}
+#loginContainer,#resetPasswordContainer{display:none}
+#loginContainer.show,#resetPasswordContainer.show{display:flex;opacity:1}
+#resetPasswordContainer .help-text{font-size:20px}
+#step_reset1,#step_reset2{display:none}
+#step_reset1.show,#step_reset2.show{display:block}

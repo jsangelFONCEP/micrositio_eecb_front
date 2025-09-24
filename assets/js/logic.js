@@ -196,6 +196,7 @@ class MainView {
 
     async init() {
         await this.loadEntities();
+        this.formLogin = new FormLoginController();
         const eventExpandedCard1 = () => {
             this.select.handleShowOptions(1, true);
             this.containerForm.style.height = (this.containerForm.scrollHeight + 15) + 'px';
@@ -205,10 +206,12 @@ class MainView {
             this.select.handleShowOptions(0, false);
             this.containerForm.style.height = 'auto';
         }
+        const eventCollapsedCard2 = () => {
+            this.formLogin.manageViewsLogin(true);
+        }
         this.card1 = new CardAnimationController('card1', eventExpandedCard1, eventCollapsedCard1);
-        this.card2 = new CardAnimationController('card2');
+        this.card2 = new CardAnimationController('card2', () => { }, eventCollapsedCard2);
 
-        this.formLogin = new FormLoginController();
 
         this.select.loadOptions(ENTITIES_INIT_SELECT, 'nombre', (e) => {
             LOADING.openFor();
@@ -232,6 +235,17 @@ class MainView {
 
 class FormLoginController {
     btnId = 'btnLogin';
+    loginContainerId = 'loginContainer';
+    resetPasswordContainerId = 'resetPasswordContainer';
+    btnResetViewId = 'btnResetView';
+    btnBackViewLoginId = 'btnBackViewLogin';
+    titleCardLoginId = 'titleCardLogin';
+    messageContainer_LoginId = 'messageContainer_Login';
+    titles = [
+        'Consulte estados de cuentas',
+        'Reestablezca su contraseña'
+    ];
+    resetPasswordClass = null;
     formFields = {
         txt_EmailLogin: {
             validations: {
@@ -246,6 +260,13 @@ class FormLoginController {
     };
     constructor() {
         this.btn = document.getElementById(this.btnId);
+        this.loginContainer = document.getElementById(this.loginContainerId);
+        this.resetPasswordContainer = document.getElementById(this.resetPasswordContainerId);
+        this.btnResetView = document.getElementById(this.btnResetViewId);
+        this.btnBackViewLogin = document.getElementById(this.btnBackViewLoginId);
+        this.titleCardLogin = document.getElementById(this.titleCardLoginId);
+        this.messageContainer = new MessageBadgeController(this.messageContainer_LoginId);
+
         this.init();
     }
 
@@ -253,7 +274,14 @@ class FormLoginController {
         this.initFields();
         this.btn.addEventListener('click', () => {
             this.sendData();
+        });
+        this.btnResetView.addEventListener('click', () => {
+            this.manageViewsLogin(false);
         })
+        this.btnBackViewLogin.addEventListener('click', () => {
+            this.manageViewsLogin(true);
+        })
+        this.manageViewsLogin(true);
     }
 
     initFields() {
@@ -261,6 +289,20 @@ class FormLoginController {
         keys.forEach((key) => {
             this.formFields[key]['class'] = new AbstractInput(key, this.formFields[key].validations, this)
         });
+    }
+
+    manageViewsLogin(state) {
+        if (state) {
+            this.loginContainer.classList.add('show');
+            this.resetPasswordContainer.classList.remove('show');
+            this.titleCardLogin.innerText = this.titles[0];
+            this.resetPasswordClass = null;
+        } else {
+            this.loginContainer.classList.remove('show');
+            this.resetPasswordContainer.classList.add('show');
+            this.titleCardLogin.innerText = this.titles[1];
+            this.resetPasswordClass = new ResetPasswordController();
+        }
     }
 
     validateForm() {
@@ -284,11 +326,145 @@ class FormLoginController {
                 if (res.data[0]) {
                     CURRENT_SESSION = new SessionController(res.data[0], res.data[1]);
                     VIEW_CONTROLLER.showView('dashboardView');
-                } else console.error('USUARIO O CONTRASEÑA MAL')
+                } else this.messageContainer.showMessage('Datos incorrectos', 'error')
             } else console.error('ERROR')
         }
         setTimeout(() => { LOADING.close(); }, 700)
     }
+}
+
+class ResetPasswordController {
+    btnResetPasswordId = 'btnResetPassword';
+    messageContainer_ResetId = 'messageContainer_Reset';
+    textHelpId = 'textHelp';
+    prefixStep = 'step_reset';
+    formFields = {
+        txt_EmailReset: {
+            validations: {
+                required: true,
+            }
+        },
+        txt_NitReset: {
+            validations: {
+                required: true,
+            }
+        },
+        txt_CodeReset: {
+            validations: {
+                required: true,
+            }
+        },
+    };
+    textBtnStep = [
+        'Validar',
+        'Reestablecer'
+    ];
+    textHelpStep = [
+        'Ingrese el email y el NIT registrado de su entidad',
+        'Ingrese el código de seguridad enviado al correo registrado'
+    ];
+
+    constructor() {
+        this.currentStep = 0;
+        this.btnResetPassword = document.getElementById(this.btnResetPasswordId);
+        this.textHelp = document.getElementById(this.textHelpId);
+        this.messageController = new MessageBadgeController(this.messageContainer_ResetId);
+        this.init();
+    }
+
+    init() {
+        this.initFields();
+        const funcBtnAction = () => {
+            this.btnAction();
+        };
+        this.btnResetPassword.addEventListener('click', () => {
+            funcBtnAction();
+        });
+        this.changeStep(0);
+    }
+
+    changeStep(step) {
+        this.currentStep = step;
+        if (this.currentStep == 0) {
+            const step1 = document.getElementById(this.prefixStep + '1');
+            const step2 = document.getElementById(this.prefixStep + '2');
+            step1.classList.add('show');
+            step2.classList.remove('show');
+        } else if (this.currentStep == 1) {
+            const step1 = document.getElementById(this.prefixStep + '1');
+            const step2 = document.getElementById(this.prefixStep + '2');
+            step2.classList.add('show');
+            step1.classList.remove('show');
+        }
+        this.btnResetPassword.innerText = this.textBtnStep[this.currentStep];
+        this.textHelp.innerText = this.textHelpStep[this.currentStep];
+    }
+
+    initFields() {
+        const keys = Object.keys(this.formFields);
+        keys.forEach((key) => {
+            this.formFields[key]['element'] = document.getElementById(key);
+            this.formFields[key]['element'].value = '';
+        });
+    }
+
+    async validateEmailAndNit(email, nit) {
+        LOADING.open();
+        if (email == '' || nit == '') {
+            this.messageController.showMessage('Por favor llene todos los campos', 'error');
+            return false;
+        } else {
+            const form = new FormData();
+            form.append('action', 'verify');
+            form.append('nit', nit);
+            form.append('email', email);
+            const res = await JsonResponseHandler.post(ROUTE_API + 'CodigoResController.php', form);
+            if (res.success) {
+                this.messageController.showMessage('Se ha enviado un correo electrónico con el código de seguridad', 'success');
+                this.changeStep(1);
+            } else
+                this.messageController.showMessage('Los datos ingresados son incorrectos', 'error');
+        }
+        LOADING.close();
+    }
+
+    async validateCode(code, email, nit) {
+        LOADING.open();
+        if (email == '' || nit == '') {
+            this.messageController.showMessage('Por favor ingrese el código', 'error');
+            return false;
+        } else {
+            const form = new FormData();
+            form.append('action', 'resetPwd');
+            form.append('code', code);
+            form.append('nit', nit);
+            form.append('email', email);
+            const res = await JsonResponseHandler.post(ROUTE_API + 'CodigoResController.php', form);
+            if (res.success) {
+                this.messageController.showMessage('Su contraseña ha sido reestablecida satisfactoriamente, se ha enviado un correo electrónico con las nuevas credenciales', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000)
+            } else
+                this.messageController.showMessage('El código ingresado es incorrecto', 'error');
+        }
+        LOADING.close();
+    }
+
+    btnAction() {
+        if (this.currentStep == 0)
+            this.validateEmailAndNit(
+                this.formFields.txt_EmailReset.element.value,
+                this.formFields.txt_NitReset.element.value
+            );
+        else if (this.currentStep == 1)
+            this.validateCode(
+                this.formFields.txt_CodeReset.element.value,
+                this.formFields.txt_EmailReset.element.value,
+                this.formFields.txt_NitReset.element.value
+            );
+    }
+
 }
 
 class SessionController {
@@ -1302,6 +1478,23 @@ class OverlayBlur {
     }
     hide() {
         this.element.classList.remove('show');
+    }
+}
+
+class MessageBadgeController {
+    constructor(messageContainerId) {
+        this.messageContainer = document.getElementById(messageContainerId);
+        if (!this.messageContainer) {
+            console.error('NO SE PUDO INICIALIZAR MESSAGEBADGE => ' + messageContainerId)
+            return;
+        }
+    }
+
+    showMessage(text, type) {
+        this.messageContainer.innerHTML = `<div class="message ${type} p-2">${text}</div>`;
+        setTimeout(() => {
+            this.messageContainer.innerHTML = '';
+        }, 5000);
     }
 }
 
