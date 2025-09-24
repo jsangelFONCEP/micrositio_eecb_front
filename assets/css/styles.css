@@ -29,10 +29,10 @@ body{position:relative}
 .img-microsite{-webkit-user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-drag:none;user-drag:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none}
 #mapImg{background-image:url(../../resources/mapa_ps1.png);background-size:auto 100%;background-repeat:no-repeat;background-position:50%;display:flex;align-items:center;text-align:center;justify-content:center}
 #arrowMap{width:60px;height:60px;position:absolute;left:34%;top:43%}
-.card-microsite-eecb .img-card{width:100%;height:150px;background-size:100%;background-position:center}
+.card-microsite-eecb .img-card{width:100%;height:150px;background-size:100%;background-position:100% 30%}
 .card-microsite-eecb .btn-submit{background-color:var(--main-green);color:#fff;font-size:20px;padding:10px 2.5rem;outline:0;border:none;margin:auto;font-weight:200!important}
 .card-microsite-eecb .btn-secondary{padding:10px 2.5rem;font-size:20px}
-.palmas_img{background-image:url(../../resources/pensionados.png)}
+.palmas_img{background-image:url(../../resources/pensionados.jpg)}
 .monte_img{background-image:url(../../resources/pensionados-foncep.jpg);background-position:center}
 .card-microsite-eecb{transition:height .3s ease;height:auto;position:relative}
 .card-microsite-eecb label{font-family:nunitoExtraBold,sans-serif!important}
@@ -80,13 +80,13 @@ body{position:relative}
 #dashboardView,#messageView,#registerView{justify-content:center}
 .card-microsite-eecb2 .card-body{padding-left:10%;padding-right:10%}
 .hidden{display:none}
-#card3 #fileStateAccounts{height:100px;display:flex;float:left;align-items:center;z-index:1001}
-#card3 #fileStateAccounts .label-file{width:60%;padding:0 1rem;border:#fff solid 3px;font-size:1.2rem;cursor:pointer}
-#card3 #fileStateAccounts .info-file{font-size:15px;padding:0;margin:0}
-#card3 #fileStateAccounts .link-file{text-decoration:none;font-weight:600;color:#2d063f}
-#card3 .entity-list{display:block;float:left;width:100%}
-#card3 .entity-list .item-entity{width:100%;box-sizing:border-box;padding:5px 30px 5px 10px;text-align:center;transition:all .3s ease;position:relative}
-#card3 .messageContainer{display:inline-block;width:100%;box-sizing:border-box}
+.fileStateAccounts{height:100px;display:flex;float:left;align-items:center;z-index:1001}
+.fileStateAccounts .label-file{width:60%;padding:0 1rem;border:#fff solid 3px;font-size:1.2rem;cursor:pointer}
+.fileStateAccounts .info-file{font-size:15px;padding:0;margin:0}
+.fileStateAccounts .link-file{text-decoration:none;font-weight:600;color:#2d063f}
+.entity-list{display:block;float:left;width:100%}
+.entity-list .item-entity{width:100%;box-sizing:border-box;padding:5px 30px 5px 10px;text-align:center;transition:all .3s ease;position:relative}
+.messageContainer{display:inline-block;width:100%;box-sizing:border-box}
 #containerEntities{height:120px;width:100%;overflow:auto}
 .flex-center-items{display:flex;align-items:center;justify-content:center;text-align:center}
 .message{border-radius:10px;margin-bottom:20px;font-weight:500;text-align:center;animation:slideIn .5s ease}
@@ -113,7 +113,7 @@ body{position:relative}
 #dataEntityModal .info-contact div{margin-top:5px}
 .text-e-big{font-size:35px}
 .text-big{font-size:30px}
-#btnBackModal,#btnLogout{z-index:1002;font-size:30px!important;font-family:dinFontBold,sans-serif!important;text-shadow:3px 3px 4px rgba(0,0,0,2.5)}
+#btnBackModal,#btnLogout,#btnManage,#btnManageDebts{z-index:1002;font-size:30px!important;font-family:dinFontBold,sans-serif!important;text-shadow:3px 3px 4px rgba(0,0,0,2.5)}
 #btnBackModal,.btn-logout{background-color:var(--main-green);color:#fff;padding:0 30px;outline:0;border:none;margin:auto;font-weight:200!important;position:absolute;right:5%;bottom:5%;display:block;width:auto}
 #btnBackModal{left:5%;bottom:5%;right:auto;display:none;opacity:0}
 #btnBackModal.show{display:block;opacity:1}
@@ -150,4 +150,13 @@ body{position:relative}
 #overlayBlurAll{position:absolute;width:100%;height:100%;background:rgba(0,0,0,.3);top:0;left:0;z-index:1000;backdrop-filter:blur(4px);opacity:0;display:none}
 #overlayBlurAll.show{display:block;opacity:1}
 .message-no-entities{display:block;font-size:20px;color:#818181}
-.enititiesContainer{max-height:600px}
+#enititiesContainer,#manageEntityModule{max-height:600px;display:none;opacity:0}
+#btnManage,#btnManageDebts{bottom:5%;left:5%;position:absolute;width:auto;display:none;z-index:999}
+#btnManage.show,#btnManageDebts.show,#manageEntityModule.show{display:block;opacity:1}
+#enititiesContainer.show{display:flex;opacity:1}
+#manageModule{border-left:solid 3px #d9d9d9}
+#manageModule label{font-size:15px!important;width:100%;text-align:center}
+#manageModule .fileStateAccounts{display:block!important;padding:10px;height:auto;text-align:center}
+#manageModule .fileStateAccounts .label-file{padding:2px 20px;box-sizing:border-box;margin:10px auto;width:auto}
+#manageModule .fileStateAccounts .label-file .info-file{text-align:justify!important}
+#entitiesLoad{max-height:300px;overflow:auto}

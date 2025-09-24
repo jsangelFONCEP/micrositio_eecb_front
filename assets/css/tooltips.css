@@ -4,11 +4,11 @@
 .customTooltip:hover::after,.customTooltip:hover::before{opacity:1;visibility:visible}
 .tooltip-danger::after{background-color:red!important}
 .tooltip-warning::after{background-color:#6f00ff!important}
-.tooltip-top::after{bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(-5px)}
+.tooltip-top::after{bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(-5px);width:100%}
 .tooltip-top::before{bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid rgba(0,0,0,.9)}
 .tooltip-top.tooltip-warning::before{border-top:6px solid #6f00ff}
 .tooltip-top:hover::after{transform:translateX(-50%) translateY(0)}
-.tooltip-bottom::after{top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(5px)}
+.tooltip-bottom::after{top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(5px);width:100%}
 .tooltip-bottom::before{top:calc(100% + 2px);left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid rgba(0,0,0,.9)}
 .tooltip-bottom.tooltip-warning::before{border-bottom:6px solid #6f00ff}
 .tooltip-bottom:hover::after{transform:translateX(-50%) translateY(0)}

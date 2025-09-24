@@ -197,7 +197,8 @@
                                                     entidad seleccionada.</div>
                                             </div>
                                         </label>
-                                        <div class="bg-main-green rounded-4 text-light mt-4 mb-1" id="fileStateAccounts"
+                                        <div class="bg-main-green rounded-4 text-light mt-4 mb-1 fileStateAccounts"
+                                            id="fileStateAccounts"
                                             data-tooltip="Antes de cargar la plantilla debe seleccionar la entidad a la cual se le cargará el documento">
                                             <input type="file" name="fileInputRegister" id="fileInputRegister"
                                                 class="hidden">
@@ -206,7 +207,7 @@
                                                 archivo</label>
                                             <p class="info-file">
                                                 Descargue, diligencie y cargue en este espacio la
-                                                <a class="link-file" href="Formato o plantilla.xlsx">Plantilla de
+                                                <a class="link-file" href="./resources/plantilla.xlsx">Plantilla de
                                                     estados de cuenta</a>
                                             </p>
                                         </div>
@@ -264,26 +265,72 @@
                 <div class="row viewContainer pt-5" id="dashboardView">
                     <div class="col-md-10">
                         <h4 class="px-3 text-center text-light mt-5 text-e-big" id="titleDashboard"></h4>
-                        <p class="text-center text-light text-e-big din-light">Acá encontrará relacionadas las entidades
-                            que reportan que usted les debe:</p>
+                        <p class="text-center text-light text-e-big din-light" id="textDescription"></p>
                         <div class="card card-microsite-eecb card-microsite-eecb3 rounded-4 overflow-hidden border-0 shadow mt-4"
                             id="listEntityContainer">
                             <div class="overflow-auto">
                                 <div class="card-body">
-                                    <div id="enititiesContainer" class="text-center mb-4 row">
+                                    <div id="enititiesContainer" class="text-center row">
 
+                                    </div>
+                                    <div id="manageEntityModule">
+                                        <div class="row">
+                                            <div class="col-md-7 px-2" id="entitiesLoad">
+                                                <div id="containerEntitiesLoaded" class="entity-list">
+                                                    Cargando entidades
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5 px-2 py-3" id="manageModule">
+                                                <div class="select-container text-center" id="selectEntities_Manage">
+                                                    <label class="label-form"> Registre la o las entidades que le
+                                                        adeudan</label>
+                                                    <div class="input-container">
+                                                        <input class="input input-microsite"
+                                                            placeholder="--  Seleccione entidad  --" readonly>
+                                                        <div class="div-options">
+                                                            <div class="container-options">
+                                                                No hay entidades disponibles
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="input-container">
+                                                    <label class="label-form text-center mt-2">
+                                                        Añadir archivos de estados de cuenta
+                                                        <div class="info-icon">
+                                                            !
+                                                            <div class="tooltip-field">Seleccione una entidad, luego dé
+                                                                click en el
+                                                                botón "elegir archivo" <br> y cargue el archivo
+                                                                correspondiente a la
+                                                                entidad seleccionada.</div>
+                                                        </div>
+                                                    </label>
+                                                    <div class="bg-main-green rounded-4 text-light mt-4 mb-4 fileStateAccounts"
+                                                        id="fileStateAccounts_Manage"
+                                                        data-tooltip="Seleccione primero una entidad">
+                                                        <input type="file" name="fileInputRegister_Manage"
+                                                            id="fileInputRegister_Manage" class="hidden">
+                                                        <label for="fileInputRegister_Manage"
+                                                            class="label-file rounded-4 text-center mx-4">Elegir
+                                                            archivo</label>
+                                                        <p class="info-file">
+                                                            Descargue, diligencie y cargue en este espacio la
+                                                            <a class="link-file"
+                                                                href="./resources/plantilla.xlsx">Plantilla de
+                                                                estados de cuenta</a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div id="messageContainer_Manage" class="messageContainer">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row mt-2"> -->
-                        <div class="col-md-10 mt-2">
-                            <button type="button" class="btn-m shadow rounded">
-                                Gestionar archivos cargados
-                            </button>
-                        </div>
-                    <!-- </div> -->
                     <div class="row px-5">
                         <div class="card card-microsite-eecb4 rounded-4 overflow-hidden border-0 shadow mt-4 p-0"
                             id="EntityModalCard">
@@ -320,9 +367,17 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn-m shadow" id="btnBackModal">Regresar a realizar otra
-                        consulta</button>
-                    <button type="button" class="btn-logout btn-m shadow" id="btnLogout">SALIR</button>
+                    <div id="containerButtons">
+                        <button type="button" class="btn-m shadow" id="btnBackModal">Regresar a realizar otra
+                            consulta</button>
+                        <button type="button" class="btn-logout btn-m shadow" id="btnLogout">SALIR</button>
+                        <button type="button" class="btn-m shadow rounded" id="btnManage">
+                            Gestionar archivos cargados
+                        </button>
+                        <button type="button" class="btn-m shadow rounded hidden" id="btnManageDebts">
+                            Ver registros de adeudos
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

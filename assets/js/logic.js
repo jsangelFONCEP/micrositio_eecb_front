@@ -173,7 +173,7 @@ class CustomSelectController {
     createOption(text, value, func) {
         const containerOption = document.createElement('div');
         containerOption.classList.add('select-option');
-        containerOption.innerText = '•  '+text;
+        containerOption.innerText = '•  ' + text;
         containerOption.setAttribute('value', value);
         containerOption.addEventListener('click', async (e) => {
             func(e);
@@ -444,37 +444,88 @@ class DashboardView {
     id = 'dashboardView';
     titleId = 'titleDashboard';
     enititiesContainerId = 'enititiesContainer';
+    manageEntityModuleId = 'manageEntityModule';
+    textDescriptionId = 'textDescription';
     btnLogoutId = 'btnLogout';
+    btnManageId = 'btnManage';
+    btnManageDebtsId = 'btnManageDebts';
     entityLoggedName = '';
+    entityId = null;
+    manageModuleClass = null;
+    texts = [
+        'Acá encontrará relacionadas las entidades que reportan que usted les debe:',
+        'En este espacio encontrará los archivos cargados por su entidad:',
+    ];
 
     constructor() {
         this.title = document.getElementById(this.titleId);
         this.enititiesContainer = document.getElementById(this.enititiesContainerId);
+        this.manageEntityModule = document.getElementById(this.manageEntityModuleId);
+        this.textDescription = document.getElementById(this.textDescriptionId);
         this.btnLogout = document.getElementById(this.btnLogoutId);
+        this.btnManage = document.getElementById(this.btnManageId);
+        this.btnManageDebts = document.getElementById(this.btnManageDebtsId);
         this.entitiesList = {};
         this.init();
     }
 
     async init() {
-        console.log("🚀 ~ DashboardView ~ init ~ CURRENT_SESSION:", CURRENT_SESSION)
+        await LOADING.openFor();
         const infoSession = await SessionController.getVariable();
-        console.log("🚀 ~ DashboardView ~ init ~ infoSession:", infoSession)
         if (infoSession) {
-            await this.loadEntities(infoSession.user);
+            await this.loadEntitiesDebts(infoSession.user);
+            await this.loadEntities();
         } else console.error('CERRAR SESIÓN');
         this.title.innerText = 'Bienvenido(a) ' + this.entityLoggedName + ":";
         this.btnLogout.addEventListener('click', () => {
             SessionController.removeVariable();
             window.location.reload();
-        })
+        });
+        this.btnManageDebts.addEventListener('click', () => {
+            this.manageStateModules(true)
+        });
+        this.btnManage.addEventListener('click', () => {
+            this.manageStateModules(false)
+        });
+        await this.manageStateModules(true);
+        await LOADING.close();
     }
 
-    async loadEntities(userId) {
+    async manageStateModules(state) {
+        await LOADING.openFor();
+        if (state) {
+            this.textDescription.innerText = this.texts[0];
+            this.enititiesContainer.classList.add('show');
+            this.manageEntityModule.classList.remove('show');
+            this.btnManage.classList.add('show');
+            this.btnManageDebts.classList.remove('show');
+        } else {
+            this.textDescription.innerText = this.texts[1];
+            this.enititiesContainer.classList.remove('show');
+            this.manageEntityModule.classList.add('show');
+            this.btnManage.classList.remove('show');
+            this.btnManageDebts.classList.add('show');
+            if (!this.manageModuleClass) this.manageModuleClass = new ManageEntityModuleController(this.entityId);
+        }
+    }
+
+    async loadEntities() {
+        const res = await JsonResponseHandler.get(ROUTE_API + 'EntidadController.php', {
+            action: 'show'
+        });
+        if (res.success) {
+            for (let entity of res.data) {
+                if (!entity.id) ENTITIES_INIT_SELECT[entity.identificador] = entity;
+                ENTITIES[entity.identificador] = entity;
+            }
+        }
+    }
+
+    async loadEntitiesDebts(userId) {
         const res = await JsonResponseHandler.get(ROUTE_API + 'ArchivoController.php', {
             action: 'show',
             userId
         });
-        console.log("🚀 ~ DashboardView ~ loadEntities ~ res:", res)
         if (res.success) {
             if (res.data.entities.length > 0) {
                 for (let item of res.data.entities) {
@@ -483,6 +534,7 @@ class DashboardView {
                 }
             } else this.enititiesContainer.innerHTML = '<div class="message-no-entities nunito-bold">Su entidad no genera reportes de adeudos</div>';
             this.entityLoggedName = res.data.user_entity;
+            this.entityId = res.data.identificador;
             return;
         } else console.error('CERRAR SESIÓN');
     }
@@ -551,6 +603,182 @@ class EntityModalController {
         this.btnBackModal.classList.remove('show');
         this.card.classList.remove('show');
         OVERLAY_BLUR.hide();
+    }
+}
+
+class ManageEntityModuleController {
+    cardId = 'ManageEntityModule';
+    selectId = 'selectEntities_Manage';
+    containerEntitiesLoadedId = 'containerEntitiesLoaded';
+    currentEntityId = null;
+    constructor(entityId) {
+        this.entityId = entityId;
+        this.titleEntityModal = document.getElementById(this.titleEntityModalId);
+        this.containerEntities = document.getElementById(this.containerEntitiesLoadedId);
+        this.card = document.getElementById(this.cardId);
+        this.selectedEntities = {};
+        this.select = new CustomSelectController(this.selectId);
+        this.inputFile = new FileManagerInput('fileInputRegister_Manage', '_Manage', this, false);
+        this.init();
+    }
+
+    async init() {
+        this.entitiesInSelect = ENTITIES;
+        this.entity = this.entitiesInSelect[this.entityId];
+        delete this.entitiesInSelect[this.entityId];
+        const infoSession = await SessionController.getVariable();
+        if (infoSession) {
+            await this.loadEntitiesLoad(infoSession.user);
+            await this.loadOptionsInSelect();
+            await this.updateDisplaySelectedEntities();
+        } else console.error('CERRAR SESIÓN')
+    }
+
+    async loadEntitiesLoad(userId) {
+        const res = await JsonResponseHandler.get(ROUTE_API + 'ArchivoController.php', {
+            action: 'showLoad',
+            userId
+        });
+        if (res.success) {
+            if (res.data.entities.length > 0) {
+                for (let item of res.data.entities) {
+                    const entity = {
+                        ...ENTITIES[item.id],
+                        file: true
+                    };
+                    delete this.entitiesInSelect[item.id];
+                    this.selectedEntities[item.id] = entity;
+                }
+            } else this.enititiesContainer.innerHTML = '<div class="message-no-entities nunito-bold">Su entidad no genera reportes de adeudos</div>';
+            return;
+        } else console.error('CERRAR SESIÓN');
+    }
+
+    loadOptionsInSelect() {
+        this.select.loadOptions(this.entitiesInSelect, 'nombre',
+            (e) => {
+                const entityId = e.target.getAttribute('value');
+                this.selectedEntities[entityId] = this.getEntityObject(entityId);
+                this.updateDisplaySelectedEntities();
+                this.currentEntityId = entityId;
+                setTimeout(() => {
+                    this.manageStates(false);
+                }, 300);
+            });
+    }
+
+    manageStates(state) {
+        this.select.isActive = state;
+        this.inputFile.handleStateInput(!state);
+    }
+
+    getEntityObject(entityId) {
+        return {
+            ...this.entitiesInSelect[entityId],
+            file: null
+        }
+    }
+
+    updateDisplaySelectedEntities() {
+        const keys = Object.keys(this.selectedEntities);
+        this.containerEntities.innerHTML = (keys.length > 0) ? '' : '<div class="flex-center-items h-100 w-100">No hay entidades seleccionadas</div>';
+        const listWithoutFile = [];
+        keys.forEach((item) => {
+            const entity = this.selectedEntities[item];
+            if (!entity.file) {
+                listWithoutFile.push(item);
+                return;
+            }
+            this.containerEntities.appendChild(
+                this.createItemEntity(entity.nombre, entity.identificador, entity.file)
+            );
+        });
+        listWithoutFile.forEach((item) => {
+            const entity = this.selectedEntities[item];
+            this.containerEntities.appendChild(
+                this.createItemEntity(entity.nombre, entity.identificador, entity.file)
+            );
+        });
+    }
+
+    removeEntity() {
+        const entity = this.selectedEntities[this.currentEntityId];
+        delete this.selectedEntities[this.currentEntityId];
+        this.entitiesInSelect[this.currentEntityId] = entity;
+        this.loadOptionsInSelect();
+        this.updateDisplaySelectedEntities();
+        this.currentEntityId = null;
+        this.inputFile.input.value = '';
+        setTimeout(() => {
+            this.manageStates(true);
+        }, 500);
+    }
+
+    createItemEntity(text, id, file) {
+        const item = document.createElement('label');
+        item.innerText = text;
+        if (!file) {
+            const btnRemove = document.createElement('a');
+            btnRemove.classList.add('btn-remove-entity');
+            btnRemove.innerText = 'X';
+            const funcRemove = () => {
+                this.removeEntity();
+            }
+            btnRemove.addEventListener('click', () => {
+                funcRemove();
+            });
+            item.appendChild(btnRemove);
+        }
+        item.classList.add('item-entity');
+        item.classList.add((file) ? 'bg-main-green' : 'bg-secondary');
+        item.classList.add('text-light');
+        item.classList.add('text-light');
+        item.classList.add('rounded-4');
+        item.classList.add('shadow');
+        item.classList.add('my-1');
+        item.setAttribute('id', `entityItem${id}`);
+        return item;
+    }
+
+    async assignFile(file) {
+        if (!this.currentEntityId) {
+            console.warn('NO SE HA SELECCIONADO NINGUNA ENTIDAD');
+            return;
+        } else {
+            const resLoad = await this.loadFile(file, this.currentEntityId);
+            if (resLoad) {
+                delete this.entitiesInSelect[this.currentEntityId];
+                this.selectedEntities[this.currentEntityId].file = true;
+
+            } else {
+                this.entitiesInSelect[this.currentEntityId] = this.selectedEntities[this.currentEntityId];
+                delete this.selectedEntities[this.currentEntityId];
+                this.inputFile.showMessage('Algo salió mal, seleccione la entidad y cargue el archivo nuevamente', 'error')
+            }
+            this.currentEntityId = null;
+            this.inputFile.input.value = '';
+            this.loadOptionsInSelect();
+            this.updateDisplaySelectedEntities();
+            setTimeout(() => {
+                this.manageStates(true);
+            }, 500);
+        }
+    }
+
+    async loadFile(file, entityId) {
+        const form = new FormData();
+        form.append('files[]', file);
+        form.append('file_entity', entityId);
+        form.append('current_entity', this.entityId);
+        form.append('action', 'load');
+        const res = await JsonResponseHandler.post(ROUTE_API + 'ArchivoController.php', form);
+        if (res.success) {
+            if (res.data) {
+                this.inputFile.showMessage('Archivo cargado exitosamente', 'success')
+                return true;
+            }
+        }
+        return false;
     }
 }
 
@@ -639,7 +867,7 @@ class FormRegisterController {
         this.entitiesInSelect = ENTITIES;
         delete this.entitiesInSelect[this.entity.identificador];
         this.loadOptionsInSelect();
-        this.inputFile = new FileManagerInput('fileInputRegister', this, false);
+        this.inputFile = new FileManagerInput('fileInputRegister', '', this, false);
         this.initFields();
         this.btnForm.addEventListener('click', () => {
             this.sendData();
@@ -769,8 +997,6 @@ class FormRegisterController {
             if (!this.formFields[keyInput].class.validateValue()) errors++;
             form.append(keyInput, this.formFields[keyInput].class.element.value)
         }
-        const keysEntities = Object.keys(this.selectedEntities);
-        console.log("🚀 ~ FormRegisterController ~ validateForm ~ errors:", errors)
         if (errors > 0) {
             this.inputFile.showMessage('Complete correctamente la información de los campos', 'error')
             return false;
@@ -779,6 +1005,7 @@ class FormRegisterController {
             this.inputFile.showMessage('Acepte la política de privacidad y seguridad de la información', 'error')
             return false;
         }
+        const keysEntities = Object.keys(this.selectedEntities);
         if (keysEntities.length > 0) {
             for (let keyEntity of keysEntities) {
                 form.append('files[]', this.selectedEntities[keyEntity].file);
@@ -799,12 +1026,10 @@ class FormRegisterController {
         form.append('action', 'validateNit');
         form.append('entity_id', this.entity.identificador);
         form.append('nit', this.formFields.txt_NIT.class.element.value);
-        console.log("🚀 ~ FormRegisterController ~ validateNit ~ form:", form)
         const res = await JsonResponseHandler.post(ROUTE_API + 'EntidadController.php', form);
         if (res.success) {
             if (res.data.validation) return true;
         }
-        console.log("🚀 ~ FormRegisterController ~ validateNit ~ res:", res)
         this.inputFile.showMessage('El número del NIT no corresponde al de la entidad', 'error');
         this.formFields.txt_NIT.class.showAlertInput(false);
         return false;
@@ -815,7 +1040,6 @@ class FormRegisterController {
         const form = await this.validateForm();
         if (form) {
             const res = await JsonResponseHandler.post(ROUTE_API + 'RegistroController.php', form);
-            console.log("🚀 ~ FormRegisterController ~ sendData ~ res:", res)
             if (res.success) {
                 VIEW_CONTROLLER.showView('messageView',
                     {
@@ -835,11 +1059,11 @@ class FormRegisterController {
 class FileManagerInput {
     isActive = true;
     fatherFormClass = null;
-    constructor(inputId, fatherFormClass, state = true) {
+    constructor(inputId, sufix = '', fatherFormClass, state = true) {
         this.fatherFormClass = fatherFormClass;
-        this.containerSectionInput = document.getElementById('fileStateAccounts');
+        this.containerSectionInput = document.getElementById('fileStateAccounts' + sufix);
         this.input = document.getElementById(inputId);
-        this.messageContainer = document.getElementById('messageContainer');
+        this.messageContainer = document.getElementById('messageContainer' + sufix);
         if (!this.input) console.error('No se pudo inicializar input file => ' + inputId);
         this.init();
         this.handleStateInput(state)
@@ -1082,17 +1306,14 @@ class OverlayBlur {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("🚀 ~ CURRENT_SESSION:", CURRENT_SESSION);
     LOADING = new Loading();
     OVERLAY_BLUR = new OverlayBlur();
     if (CURRENT_SESSION) {
         VIEW_CONTROLLER.showView('dashboardView');
     } else {
         const session = await SessionController.getVariable();
-        console.log("🚀 ~ session:", session)
         if (session) {
             CURRENT_SESSION = await new SessionController(session.user, session.token);
-            console.log("🚀 ~ CURRENT_SESSION:", CURRENT_SESSION)
             await VIEW_CONTROLLER.showView('dashboardView');
         } else {
             VIEW_CONTROLLER.showView('mainView');
