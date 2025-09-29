@@ -1,7 +1,6 @@
 let _windowCV, _windowEIS = {}, _windowEN = {}, _windowCS, _windowL, _windowO, _windowE;
 
-// let ROUTE_API = 'http://10.160.3.244:82/controllers/';
-let ROUTE_API = 'http://localhost/FONCEP/MICROSITIO/api.foncep.gov.co/api.foncep.gov.co/controllers/';
+let ROUTE_API = 'http://10.160.3.34:82/controllers/';
 
 //UTILS
 class Utils {
