@@ -1,4 +1,4 @@
-let CURRENT_VIEW, ENTITIES_INIT_SELECT = {}, ENTITIES = {}, CURRENT_SESSION, LOADING, OVERLAY_BLUR;
+let CURRENT_VIEW, ENTITIES_INIT_SELECT = {}, ENTITIES = {}, CURRENT_SESSION, LOADING, OVERLAY_BLUR, ENTITIES_LIST;
 
 // let ROUTE_API = 'http://10.160.3.244:82/controllers/';
 let ROUTE_API = 'http://localhost/FONCEP/MICROSITIO/api.foncep.gov.co/api.foncep.gov.co/controllers/';
@@ -159,15 +159,25 @@ class CustomSelectController {
         else this.containerOptions.classList.remove(TYPES[type]);
     }
 
-    loadOptions(options, refText, actionClick = () => { }) {
+    loadOptions(options, refId, refText, actionClick = () => { }, exclude = { ref: '', list_excludes: [] }) {
         this.containerOptions.innerHTML = '';
-        this.options = options;
-        const keysOptions = Object.keys(options)
-        keysOptions.forEach((key) => {
-            const item = this.options[key];
-            const containerOption = this.createOption(item[refText], key, actionClick);
+        let listOptions = Object.keys(options);
+        let flagArray = Array.isArray(options);
+        if (flagArray)
+            listOptions = options;
+
+        let optionsToSave = (flagArray) ? {} : options;
+        listOptions.forEach((key) => {
+            const item = (flagArray) ? key : options[key];
+            const id = (flagArray) ? item[refId] : key;
+            let valExclude = item[exclude.ref] ?? null;
+            valExclude = (valExclude != null) ? valExclude.toString() : valExclude;
+            if (valExclude != null && exclude.list_excludes.includes(valExclude)) return;
+            const containerOption = this.createOption(item[refText], id, actionClick);
             this.containerOptions.appendChild(containerOption);
+            if (flagArray) optionsToSave[id] = item;
         });
+        this.options = optionsToSave;
     }
 
     createOption(text, value, func) {
@@ -213,11 +223,11 @@ class MainView {
         this.card2 = new CardAnimationController('card2', () => { }, eventCollapsedCard2);
 
 
-        this.select.loadOptions(ENTITIES_INIT_SELECT, 'nombre', (e) => {
+        this.select.loadOptions(ENTITIES_LIST, 'identificador', 'nombre', (e) => {
             LOADING.openFor();
             const entityId = e.target.getAttribute('value');
             VIEW_CONTROLLER.showView('registerView', { entityId });
-        });
+        }, { ref: 'identificador', list_excludes: ['0'] });
     }
 
     async loadEntities() {
@@ -225,6 +235,7 @@ class MainView {
             action: 'show'
         });
         if (res.success) {
+            ENTITIES_LIST = res.data;
             for (let entity of res.data) {
                 if (!entity.id) ENTITIES_INIT_SELECT[entity.identificador] = entity;
                 ENTITIES[entity.identificador] = entity;
@@ -757,8 +768,8 @@ class EntityModalController {
 
     init() {
         this.titleEntityModal.innerHTML = this.entity.nombre + '<br> NIT: ' + this.entity.nit;
-        this.lbl_Phone.innerText = this.entity.telefono_contacto;
-        this.lbl_Email.innerText = this.entity.email_contacto;
+        this.lbl_Phone.innerText = this.entity.telefono;
+        this.lbl_Email.innerText = this.entity.email;
         this.lbl_LinkDocument.setAttribute('href', ROUTE_API + 'DownloadFileController.php?id=' + this.entity.id);
         const funcHide = () => {
             this.hide()
@@ -831,7 +842,7 @@ class ManageEntityModuleController {
     }
 
     loadOptionsInSelect() {
-        this.select.loadOptions(this.entitiesInSelect, 'nombre',
+        this.select.loadOptions(this.entitiesInSelect, 'identificador', 'nombre',
             (e) => {
                 const entityId = e.target.getAttribute('value');
                 this.selectedEntities[entityId] = this.getEntityObject(entityId);
@@ -978,29 +989,12 @@ class FormRegisterController {
                 required: true,
             }
         },
-        txt_Email: {
-            validations: {
-                required: true,
-                maxLength: 50,
-                regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                typeCharacters: false,
-            }
-        },
         slt_City: {
             validations: {
                 required: true,
                 maxLength: 50,
                 regex: false,
                 typeCharacters: false,
-            }
-        },
-        txt_Phone: {
-            validations: {
-                required: true,
-                requiredLength: 10,
-                maxLength: 10,
-                regex: false,
-                typeCharacters: 'number',
             }
         },
         txt_PhoneContact: {
@@ -1012,12 +1006,21 @@ class FormRegisterController {
                 typeCharacters: 'number',
             }
         },
+        txt_Email: {
+            validations: {
+                required: true,
+                maxLength: 50,
+                regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                typeCharacters: false,
+            }
+        },
         txt_EmailContact: {
             validations: {
                 required: true,
                 maxLength: 50,
                 regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 typeCharacters: false,
+                equalsTo: 'txt_Email'
             }
         },
         cbx_Politics: {
@@ -1070,7 +1073,7 @@ class FormRegisterController {
     }
 
     loadOptionsInSelect() {
-        this.select.loadOptions(this.entitiesInSelect, 'nombre',
+        this.select.loadOptions(this.entitiesInSelect, 'identificador', 'nombre',
             (e) => {
                 const entityId = e.target.getAttribute('value');
                 this.selectedEntities[entityId] = this.getEntityObject(entityId);
@@ -1226,7 +1229,10 @@ class FormRegisterController {
                                 llegará el usuario y contraseña para
                                 consultar los estados de cuentas.`
                     });
-            } else console.error('ERROR')
+            } else {
+                this.inputFile.showMessage('Algo salió mal, intente nuevamente. Si el error persiste, comuníquese a la línea de apoyo.', 'error')
+                console.error('ERROR')
+            }
         }
         setTimeout(() => { LOADING.close(); }, 500)
     }
@@ -1351,7 +1357,11 @@ class AbstractInput {
         }
         if (this.validations.regex)
             if (!this.validations.regex.test(this.element.value)) isValid++;
-
+        if (this.validations.equalsTo) {
+            const elementEqualsTo = document.getElementById(this.validations.equalsTo);
+            console.log("🚀 ~ AbstractInput ~ validateValue ~ elementEqualsTo:", elementEqualsTo)
+            if (elementEqualsTo && elementEqualsTo.value != this.element.value) isValid++;
+        }
         this.showAlertInput(isValid == 0)
         return isValid == 0;
     }
