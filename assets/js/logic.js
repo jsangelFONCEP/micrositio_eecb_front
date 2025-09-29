@@ -1,4 +1,4 @@
-let CURRENT_VIEW, ENTITIES_INIT_SELECT = {}, ENTITIES = {}, CURRENT_SESSION, LOADING, OVERLAY_BLUR, ENTITIES_LIST;
+let _windowCV, _windowEIS = {}, _windowEN = {}, _windowCS, _windowL, _windowO, _windowE;
 
 // let ROUTE_API = 'http://10.160.3.244:82/controllers/';
 let ROUTE_API = 'http://localhost/FONCEP/MICROSITIO/api.foncep.gov.co/api.foncep.gov.co/controllers/';
@@ -44,16 +44,16 @@ class ViewController {
     initializateView(viewId, data) {
         switch (viewId) {
             case 'mainView':
-                CURRENT_VIEW = new MainView();
+                _windowCV = new MainView();
                 return;
             case 'registerView':
-                CURRENT_VIEW = new RegisterView(data.entityId);
+                _windowCV = new RegisterView(data.entityId);
                 return;
             case 'messageView':
-                CURRENT_VIEW = new MessageView(data.title, data.body);
+                _windowCV = new MessageView(data.title, data.body);
                 return;
             case 'dashboardView':
-                CURRENT_VIEW = new DashboardView();
+                _windowCV = new DashboardView();
                 return;
         }
     }
@@ -223,8 +223,8 @@ class MainView {
         this.card2 = new CardAnimationController('card2', () => { }, eventCollapsedCard2);
 
 
-        this.select.loadOptions(ENTITIES_LIST, 'identificador', 'nombre', (e) => {
-            LOADING.openFor();
+        this.select.loadOptions(_windowE, 'identificador', 'nombre', (e) => {
+            _windowL.openFor();
             const entityId = e.target.getAttribute('value');
             VIEW_CONTROLLER.showView('registerView', { entityId });
         }, { ref: 'identificador', list_excludes: ['0'] });
@@ -235,10 +235,10 @@ class MainView {
             action: 'show'
         });
         if (res.success) {
-            ENTITIES_LIST = res.data;
+            _windowE = res.data;
             for (let entity of res.data) {
-                if (!entity.id) ENTITIES_INIT_SELECT[entity.identificador] = entity;
-                ENTITIES[entity.identificador] = entity;
+                if (!entity.id) _windowEIS[entity.identificador] = entity;
+                _windowEN[entity.identificador] = entity;
             }
         }
     }
@@ -329,18 +329,18 @@ class FormLoginController {
     }
 
     async sendData() {
-        LOADING.open();
+        _windowL.open();
         const form = await this.validateForm();
         if (form) {
             const res = await JsonResponseHandler.post(ROUTE_API + 'LoginController.php', form);
             if (res.success) {
                 if (res.data[0]) {
-                    CURRENT_SESSION = new SessionController(res.data[0], res.data[1]);
+                    _windowCS = new SessionController(res.data[0], res.data[1]);
                     VIEW_CONTROLLER.showView('dashboardView');
                 } else this.messageContainer.showMessage('Datos incorrectos', 'error')
             } else console.error('ERROR')
         }
-        setTimeout(() => { LOADING.close(); }, 700)
+        setTimeout(() => { _windowL.close(); }, 700)
     }
 }
 
@@ -420,7 +420,7 @@ class ResetPasswordController {
     }
 
     async validateEmailAndNit(email, nit) {
-        LOADING.open();
+        _windowL.open();
         if (email == '' || nit == '') {
             this.messageController.showMessage('Por favor llene todos los campos', 'error');
             return false;
@@ -436,11 +436,11 @@ class ResetPasswordController {
             } else
                 this.messageController.showMessage('Los datos ingresados son incorrectos', 'error');
         }
-        LOADING.close();
+        _windowL.close();
     }
 
     async validateCode(code, email, nit) {
-        LOADING.open();
+        _windowL.open();
         if (email == '' || nit == '') {
             this.messageController.showMessage('Por favor ingrese el código', 'error');
             return false;
@@ -459,7 +459,7 @@ class ResetPasswordController {
             } else
                 this.messageController.showMessage('El código ingresado es incorrecto', 'error');
         }
-        LOADING.close();
+        _windowL.close();
     }
 
     btnAction() {
@@ -592,7 +592,7 @@ class RegisterView {
     form = null;
 
     constructor(entityId = null) {
-        this.entity = (entityId) ? ENTITIES[entityId] : null;
+        this.entity = (entityId) ? _windowEN[entityId] : null;
         if (!this.entity) console.error('Error al cargar la entidad');
         this.title = document.getElementById(this.titleId);
         this.init();
@@ -657,7 +657,7 @@ class DashboardView {
     }
 
     async init() {
-        await LOADING.openFor();
+        await _windowL.openFor();
         const infoSession = await SessionController.getVariable();
         if (infoSession) {
             await this.loadEntitiesDebts(infoSession.user);
@@ -675,11 +675,11 @@ class DashboardView {
             this.manageStateModules(false)
         });
         await this.manageStateModules(true);
-        await LOADING.close();
+        await _windowL.close();
     }
 
     async manageStateModules(state) {
-        await LOADING.openFor();
+        await _windowL.openFor();
         if (state) {
             this.textDescription.innerText = this.texts[0];
             this.enititiesContainer.classList.add('show');
@@ -702,8 +702,8 @@ class DashboardView {
         });
         if (res.success) {
             for (let entity of res.data) {
-                if (!entity.id) ENTITIES_INIT_SELECT[entity.identificador] = entity;
-                ENTITIES[entity.identificador] = entity;
+                if (!entity.id) _windowEIS[entity.identificador] = entity;
+                _windowEN[entity.identificador] = entity;
             }
         }
     }
@@ -783,13 +783,13 @@ class EntityModalController {
     show() {
         this.btnBackModal.classList.add('show');
         this.card.classList.add('show');
-        OVERLAY_BLUR.show();
+        _windowO.show();
     }
 
     hide() {
         this.btnBackModal.classList.remove('show');
         this.card.classList.remove('show');
-        OVERLAY_BLUR.hide();
+        _windowO.hide();
     }
 }
 
@@ -810,7 +810,7 @@ class ManageEntityModuleController {
     }
 
     async init() {
-        this.entitiesInSelect = ENTITIES;
+        this.entitiesInSelect = _windowEN;
         this.entity = this.entitiesInSelect[this.entityId];
         delete this.entitiesInSelect[this.entityId];
         const infoSession = await SessionController.getVariable();
@@ -830,7 +830,7 @@ class ManageEntityModuleController {
             if (res.data.entities.length > 0) {
                 for (let item of res.data.entities) {
                     const entity = {
-                        ...ENTITIES[item.id],
+                        ..._windowEN[item.id],
                         file: true
                     };
                     delete this.entitiesInSelect[item.id];
@@ -1043,7 +1043,7 @@ class FormRegisterController {
 
     init() {
         this.select = new CustomSelectController('selectEntities');
-        this.entitiesInSelect = ENTITIES;
+        this.entitiesInSelect = _windowEN;
         delete this.entitiesInSelect[this.entity.identificador];
         this.loadOptionsInSelect();
         this.inputFile = new FileManagerInput('fileInputRegister', '', this, false);
@@ -1215,7 +1215,7 @@ class FormRegisterController {
     }
 
     async sendData() {
-        LOADING.open();
+        _windowL.open();
         const form = await this.validateForm();
         if (form) {
             const res = await JsonResponseHandler.post(ROUTE_API + 'RegistroController.php', form);
@@ -1234,7 +1234,7 @@ class FormRegisterController {
                 console.error('ERROR')
             }
         }
-        setTimeout(() => { LOADING.close(); }, 500)
+        setTimeout(() => { _windowL.close(); }, 500)
     }
 }
 
@@ -1509,14 +1509,14 @@ class MessageBadgeController {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    LOADING = new Loading();
-    OVERLAY_BLUR = new OverlayBlur();
-    if (CURRENT_SESSION) {
+    _windowL = new Loading();
+    _windowO = new OverlayBlur();
+    if (_windowCS) {
         VIEW_CONTROLLER.showView('dashboardView');
     } else {
         const session = await SessionController.getVariable();
         if (session) {
-            CURRENT_SESSION = await new SessionController(session.user, session.token);
+            _windowCS = await new SessionController(session.user, session.token);
             await VIEW_CONTROLLER.showView('dashboardView');
         } else {
             VIEW_CONTROLLER.showView('mainView');
