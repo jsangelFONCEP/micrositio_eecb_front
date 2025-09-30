@@ -335,7 +335,9 @@ class FormLoginController {
             if (res.success) {
                 if (res.data[0]) {
                     _windowCS = new SessionController(res.data[0], res.data[1]);
-                    VIEW_CONTROLLER.showView('dashboardView');
+                    setTimeout(() => {
+                        VIEW_CONTROLLER.showView('dashboardView');
+                    }, 500);
                 } else this.messageContainer.showMessage('Datos incorrectos', 'error')
             } else console.error('ERROR')
         }
@@ -487,101 +489,30 @@ class SessionController {
         this.init();
     }
     async init() {
-        // this.cryptoHelper = new CryptoHelper(Date.now() + '_' + this.tokenVar.user);
         this.setVariable();
     }
 
     async setVariable() {
-        const tokenStorage = JSON.stringify(this.tokenVar);
-        // const encrypted = await this.cryptoHelper.encrypt(tokenStorage);
-        // localStorage.setItem("dataToken", encrypted);
+        const cS = new _cu();
+        const encriptado = await cS.encrypt(JSON.stringify(this.tokenVar));
+        const tokenStorage = encriptado;
         localStorage.setItem("dataToken", tokenStorage);
     }
 
     static async getVariable() {
+        const cS = new _cu();
         const tokenStorage = await localStorage.getItem("dataToken");
+        console.log("🚀 ~ SessionController ~ getVariable ~ tokenStorage:", tokenStorage)
         if (!tokenStorage) return null;
-        // const decrypted = await this.cryptoHelper.decrypt(tokenStorage);
-        // return JSON.parse(decrypted);
-        return JSON.parse(tokenStorage);
+        const desencriptado = await cS.decrypt(tokenStorage);
+        if (!desencriptado) return null;
+        return JSON.parse(desencriptado);
     }
 
     static async removeVariable() {
         localStorage.removeItem("dataToken");
     }
 
-}
-
-class CryptoHelper {
-    constructor(password) {
-        this.password = password;
-        this.encoder = new TextEncoder();
-        this.decoder = new TextDecoder();
-    }
-
-    async deriveKey(salt) {
-        const baseKey = await crypto.subtle.importKey(
-            "raw",
-            this.encoder.encode(this.password),
-            { name: "PBKDF2" },
-            false,
-            ["deriveKey"]
-        );
-
-        return await crypto.subtle.deriveKey(
-            {
-                name: "PBKDF2",
-                salt,
-                iterations: 100000,
-                hash: "SHA-256"
-            },
-            baseKey,
-            {
-                name: "AES-GCM",
-                length: 256
-            },
-            false,
-            ["encrypt", "decrypt"]
-        );
-    }
-
-    async encrypt(plainText) {
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        const key = await this.deriveKey(salt);
-
-        const encrypted = await crypto.subtle.encrypt(
-            {
-                name: "AES-GCM",
-                iv
-            },
-            key,
-            this.encoder.encode(plainText)
-        );
-        return {
-            ciphertext: btoa(String.fromCharCode(...new Uint8Array(encrypted))),
-            iv: btoa(String.fromCharCode(...iv)),
-            salt: btoa(String.fromCharCode(...salt))
-        };
-    }
-
-    async decrypt(encryptedData) {
-        const iv = Uint8Array.from(atob(encryptedData.iv), c => c.charCodeAt(0));
-        const salt = Uint8Array.from(atob(encryptedData.salt), c => c.charCodeAt(0));
-        const data = Uint8Array.from(atob(encryptedData.ciphertext), c => c.charCodeAt(0));
-        const key = await this.deriveKey(salt);
-
-        const decrypted = await crypto.subtle.decrypt(
-            {
-                name: "AES-GCM",
-                iv
-            },
-            key,
-            data
-        );
-
-        return this.decoder.decode(decrypted);
-    }
 }
 
 
@@ -1506,6 +1437,147 @@ class MessageBadgeController {
         }, 5000);
     }
 }
+
+class _cu {
+    constructor() {
+        // La clave debe tener exactamente 32 bytes para AES-256
+        this.secretKey = this.normalizeKey('MiClaveSecretaSuperSegura123!@#');
+    }
+
+    // Normaliza la clave a 32 bytes usando el mismo método que PHP
+    normalizeKey(key) {
+        const hash = new TextEncoder().encode(key);
+        const normalized = new Uint8Array(32);
+
+        for (let i = 0; i < 32; i++) {
+            normalized[i] = hash[i % hash.length];
+        }
+
+        return normalized;
+    }
+
+    // Convierte Uint8Array a Base64 (más compatible que hex)
+    toBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    }
+
+    // Convierte Base64 a Uint8Array
+    fromBase64(base64) {
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+    }
+
+    // Encripta un string
+    async encrypt(plaintext) {
+        try {
+            // Genera IV aleatorio (16 bytes para AES)
+            const iv = crypto.getRandomValues(new Uint8Array(16));
+
+            // Importa la clave
+            const key = await crypto.subtle.importKey(
+                'raw',
+                this.secretKey,
+                { name: 'AES-CBC', length: 256 },
+                false,
+                ['encrypt']
+            );
+
+            // Convierte el texto a bytes
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plaintext);
+
+            // Encripta
+            const encrypted = await crypto.subtle.encrypt(
+                { name: 'AES-CBC', iv: iv },
+                key,
+                data
+            );
+
+            // Combina IV + datos encriptados
+            const combined = new Uint8Array(iv.length + encrypted.byteLength);
+            combined.set(iv, 0);
+            combined.set(new Uint8Array(encrypted), iv.length);
+
+            // Retorna en Base64
+            return this.toBase64(combined);
+        } catch (error) {
+            console.error('Error detallado al encriptar:', error);
+            throw new Error('Error al encriptar: ' + error.message);
+        }
+    }
+
+    // Desencripta un string
+    async decrypt(encryptedBase64) {
+        try {
+            // Convierte de Base64 a bytes
+            const combined = this.fromBase64(encryptedBase64);
+
+            // Verifica que tenga el tamaño mínimo (IV + al menos un bloque)
+            if (combined.length < 32) {
+                throw new Error('Datos encriptados inválidos: muy cortos');
+            }
+
+            // Extrae IV (primeros 16 bytes) y datos encriptados
+            const iv = combined.slice(0, 16);
+            const encrypted = combined.slice(16);
+
+            // Verifica que los datos encriptados sean múltiplo de 16 (tamaño de bloque AES)
+            if (encrypted.length % 16 !== 0) {
+                throw new Error('Datos encriptados inválidos: tamaño incorrecto');
+            }
+
+            // Importa la clave
+            const key = await crypto.subtle.importKey(
+                'raw',
+                this.secretKey,
+                { name: 'AES-CBC', length: 256 },
+                false,
+                ['decrypt']
+            );
+
+            // Desencripta
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-CBC', iv: iv },
+                key,
+                encrypted
+            );
+
+            // Convierte bytes a string
+            const decoder = new TextDecoder();
+            return decoder.decode(decrypted);
+        } catch (error) {
+            console.error('Error detallado al desencriptar:', error);
+            console.error('Longitud de datos:', encryptedBase64.length);
+            throw new Error('Error al desencriptar: ' + error.message);
+        }
+    }
+}
+
+async function ejemplo() {
+
+    const crypto = new _cu();
+    const textoOriginal = 'Hola, este es un mensaje secreto';
+    const encriptado = await crypto.encrypt(textoOriginal);
+    console.log('Texto original:', textoOriginal);
+    console.log('Encriptado:', encriptado);
+
+    // Desencriptar
+    const desencriptado = await crypto.decrypt(encriptado);
+    console.log('Desencriptado:', desencriptado);
+
+}
+
+// Ejecutar ejemplo
+// ejemplo().catch(console.error);
 
 document.addEventListener('DOMContentLoaded', async () => {
     _windowL = new Loading();
