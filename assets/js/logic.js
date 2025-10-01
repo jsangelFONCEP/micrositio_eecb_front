@@ -317,14 +317,14 @@ class FormLoginController {
     }
 
     validateForm() {
-        const form = new FormData();
+        const form = {};
         const keysFields = Object.keys(this.formFields);
         let errors = 0;
         for (let keyInput of keysFields) {
             if (!this.formFields[keyInput].class.validateValue()) errors++;
-            form.append(keyInput, this.formFields[keyInput].class.element.value)
+            form[keyInput] = this.formFields[keyInput].class.element.value;
         }
-        form.append('action', 'login');
+        form['action'] = 'login';
         return (errors > 0) ? null : form;
     }
 
@@ -427,10 +427,10 @@ class ResetPasswordController {
             this.messageController.showMessage('Por favor llene todos los campos', 'error');
             return false;
         } else {
-            const form = new FormData();
-            form.append('action', 'verify');
-            form.append('nit', nit);
-            form.append('email', email);
+            const form = {};
+            form['action'] = 'verify';
+            form['nit'] = nit;
+            form['email'] = email;
             const res = await JsonResponseHandler.post(ROUTE_API + 'CodigoResController.php', form);
             if (res.success) {
                 this.messageController.showMessage('Se ha enviado un correo electrónico con el código de seguridad', 'success');
@@ -447,11 +447,11 @@ class ResetPasswordController {
             this.messageController.showMessage('Por favor ingrese el código', 'error');
             return false;
         } else {
-            const form = new FormData();
-            form.append('action', 'resetPwd');
-            form.append('code', code);
-            form.append('nit', nit);
-            form.append('email', email);
+            const form = {};
+            form['action'] = 'resetPwd';
+            form['code'] = code;
+            form['nit'] = nit;
+            form['email'] = email;
             const res = await JsonResponseHandler.post(ROUTE_API + 'CodigoResController.php', form);
             if (res.success) {
                 this.messageController.showMessage('Su contraseña ha sido reestablecida satisfactoriamente, se ha enviado un correo electrónico con las nuevas credenciales', 'success');
@@ -503,7 +503,6 @@ class SessionController {
     static async getVariable() {
         const cS = new _cu();
         const tokenStorage = await localStorage.getItem("dataToken");
-        console.log("🚀 ~ SessionController ~ getVariable ~ tokenStorage:", tokenStorage)
         if (!tokenStorage) return null;
         const desencriptado = await cS.decrypt(tokenStorage);
         if (!desencriptado) return null;
@@ -697,11 +696,15 @@ class EntityModalController {
         this.init();
     }
 
-    init() {
+    async init() {
         this.titleEntityModal.innerHTML = this.entity.nombre + '<br> NIT: ' + this.entity.nit;
         this.lbl_Phone.innerText = this.entity.telefono;
         this.lbl_Email.innerText = this.entity.email;
-        this.lbl_LinkDocument.setAttribute('href', ROUTE_API + 'DownloadFileController.php?id=' + this.entity.id);
+        const cry = new _cu();
+        const dataSend = { id: this.entity.id };
+        const encrypted = await cry.encrypt(JSON.stringify(dataSend));
+        const encoded = encodeURIComponent(encrypted);
+        this.lbl_LinkDocument.setAttribute('href', ROUTE_API + 'DownloadFileController.php?data=' + encoded);
         const funcHide = () => {
             this.hide()
         }
@@ -884,11 +887,11 @@ class ManageEntityModuleController {
     }
 
     async loadFile(file, entityId) {
-        const form = new FormData();
-        form.append('files[]', file);
-        form.append('file_entity', entityId);
-        form.append('current_entity', this.entityId);
-        form.append('action', 'load');
+        const form = {};
+        form['files[]'] = file;
+        form['file_entity'] = entityId;
+        form['current_entity'] = this.entityId;
+        form['action'] = 'load';
         const res = await JsonResponseHandler.post(ROUTE_API + 'ArchivoController.php', form);
         if (res.success) {
             if (res.data) {
@@ -1101,11 +1104,12 @@ class FormRegisterController {
             return false;
         }
         const form = new FormData();
+        const formData = {};
         const keysFields = Object.keys(this.formFields);
         let errors = 0;
         for (let keyInput of keysFields) {
             if (!this.formFields[keyInput].class.validateValue()) errors++;
-            form.append(keyInput, this.formFields[keyInput].class.element.value)
+            formData[keyInput] = this.formFields[keyInput].class.element.value;
         }
         if (errors > 0) {
             this.inputFile.showMessage('Complete correctamente la información de los campos', 'error')
@@ -1120,22 +1124,23 @@ class FormRegisterController {
             for (let keyEntity of keysEntities) {
                 form.append('files[]', this.selectedEntities[keyEntity].file);
             }
-            form.append('file_entities', keysEntities.join(','));
+            formData['file_entities'] = keysEntities.join(',');
         } else {
             this.inputFile.showMessage('Debe agregar al menos una entidad', 'error')
             return false;
         }
-        form.append('entidad_id', this.entity.identificador);
-        form.append('action', 'create');
+        form['entidad_id'] = this.entity.identificador;
+        form['action'] = 'create';
+        form.append('formData', formData);
         if (!await this.validateNit()) errors++;
         return (errors > 0) ? null : form;
     }
 
     async validateNit() {
-        const form = new FormData();
-        form.append('action', 'validateNit');
-        form.append('entity_id', this.entity.identificador);
-        form.append('nit', this.formFields.txt_NIT.class.element.value);
+        const form = {};
+        form['action'] = 'validateNit';
+        form['entity_id'] = this.entity.identificador;
+        form['nit'] = this.formFields.txt_NIT.class.element.value;
         const res = await JsonResponseHandler.post(ROUTE_API + 'EntidadController.php', form);
         if (res.success) {
             if (res.data.validation) return true;
@@ -1290,7 +1295,6 @@ class AbstractInput {
             if (!this.validations.regex.test(this.element.value)) isValid++;
         if (this.validations.equalsTo) {
             const elementEqualsTo = document.getElementById(this.validations.equalsTo);
-            console.log("🚀 ~ AbstractInput ~ validateValue ~ elementEqualsTo:", elementEqualsTo)
             if (elementEqualsTo && elementEqualsTo.value != this.element.value) isValid++;
         }
         this.showAlertInput(isValid == 0)
@@ -1318,15 +1322,16 @@ class AbstractInput {
 }
 
 class JsonResponseHandler {
-    static async post(url, data = {}) {
+    static async post(url, data) {
+        console.log("🚀 ~ JsonResponseHandler ~ post ~ data:", data)
         try {
-            const isFormData = data instanceof FormData;
+            const cry = new _cu();
+            const dataToSend = await JsonResponseHandler.encryptPostFormData(data, cry);
+            if (!dataToSend) console.error('ERROR AL ENVIAR PETICIÓN')
             const response = await fetch(url, {
                 method: 'POST',
-                headers: isFormData ? {} : {
-                    'Content-Type': 'application/json'
-                },
-                body: isFormData ? data : JSON.stringify(data)
+                headers: {},
+                body: dataToSend
             });
 
             if (!response.ok) {
@@ -1335,11 +1340,15 @@ class JsonResponseHandler {
 
             const json = await response.json();
 
-            if (!('success' in json) || !('msg' in json) || !('timestamp' in json)) {
-                throw new Error('Respuesta con formato inesperado');
-            }
+            if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
+            const decrypt = await cry.decrypt(json.data);
+            const dataRes = JSON.parse(decrypt);
+            console.log("🚀 ~ JsonResponseHandler ~ post ~ dataRes:", dataRes)
 
-            return (json);
+            if (!('success' in dataRes) || !('msg' in dataRes) || !('timestamp' in dataRes))
+                throw new Error('Respuesta con formato inesperado');
+
+            return (dataRes);
         } catch (error) {
             console.error('Error en la petición:', error);
             return {
@@ -1352,7 +1361,11 @@ class JsonResponseHandler {
     }
 
     static async get(url, params = {}) {
-        const query = new URLSearchParams(params).toString();
+        console.log("🚀 ~ JsonResponseHandler ~ get ~ params:", params)
+        const cry = new _cu();
+        const paramsToSend = await JsonResponseHandler.encryptGetParams(params, cry);
+        if (!paramsToSend) console.error('ERROR AL REALIZAR PETICIÓN')
+        const query = new URLSearchParams(paramsToSend).toString();
         const urlW = query ? `${url}?${query}` : url;
 
         try {
@@ -1368,10 +1381,16 @@ class JsonResponseHandler {
             }
 
             const json = await response.json();
-            if (!('success' in json) || !('msg' in json) || !('timestamp' in json)) {
+
+            if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
+            const decrypt = await cry.decrypt(json.data);
+            const dataRes = JSON.parse(decrypt);
+            console.log("🚀 ~ JsonResponseHandler ~ get ~ dataRes:", dataRes)
+
+            if (!('success' in dataRes) || !('msg' in dataRes) || !('timestamp' in dataRes))
                 throw new Error('Respuesta con formato inesperado');
-            }
-            return (json);
+
+            return (dataRes);
         } catch (error) {
             console.error('Error en la petición:', error);
             return {
@@ -1381,6 +1400,135 @@ class JsonResponseHandler {
                 data: null
             };
         }
+    }
+
+    static async encryptPostFormData(data, cry) {
+        if (!data) return null;
+        const isFormData = data instanceof FormData;
+        const keyData = 'formData';
+        let dataSend = null;
+        if (isFormData) {
+            const dataToEncrypt = data.get(keyData);
+            if (!dataToEncrypt) return null;
+            const dataEncrypted = await cry.encrypt(JSON.stringify(dataToEncrypt));
+            data.set(keyData, dataEncrypted);
+            dataSend = data;
+        } else {
+            const dataFormToSend = new FormData();
+            const dataEncrypted = await cry.encrypt(JSON.stringify(data));
+            dataFormToSend.append(keyData, dataEncrypted);
+            dataSend = dataFormToSend;
+        }
+        return dataSend;
+    }
+
+    static async encryptGetParams(data) {
+        if (!data) return null;
+        const cry = new _cu();
+        const dataEncrypted = await cry.encrypt(JSON.stringify(data));
+        return {
+            data: (dataEncrypted)
+        };
+    }
+}
+
+class _cu {
+    constructor() {
+        this.secretKey = 'mi-clave-secreta-muy-segura';
+    }
+
+    async encrypt(text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+
+        // Generar IV aleatorio
+        const iv = crypto.getRandomValues(new Uint8Array(16));
+
+        // Derivar clave desde el secreto
+        const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(this.secretKey),
+            { name: 'PBKDF2' },
+            false,
+            ['deriveBits', 'deriveKey']
+        );
+
+        const key = await crypto.subtle.deriveKey(
+            {
+                name: 'PBKDF2',
+                salt: encoder.encode('salt'),
+                iterations: 100000,
+                hash: 'SHA-256'
+            },
+            keyMaterial,
+            { name: 'AES-CBC', length: 256 },
+            false,
+            ['encrypt']
+        );
+
+        // Encriptar
+        const encrypted = await crypto.subtle.encrypt(
+            { name: 'AES-CBC', iv: iv },
+            key,
+            data
+        );
+
+        // Combinar IV + datos encriptados
+        const combined = new Uint8Array(iv.length + encrypted.byteLength);
+        combined.set(iv);
+        combined.set(new Uint8Array(encrypted), iv.length);
+
+        // Convertir a base64
+        const encryptedTxt = btoa(String.fromCharCode(...combined));
+        return (encryptedTxt);
+    }
+
+    async decrypt(encryptedText) {
+        try {
+            const encoder = new TextEncoder();
+            const decoder = new TextDecoder();
+
+            // Decodificar base64
+            const combined = Uint8Array.from(atob(encryptedText), c => c.charCodeAt(0));
+
+            // Extraer IV y datos
+            const iv = combined.slice(0, 16);
+            const data = combined.slice(16);
+
+            // Derivar clave
+            const keyMaterial = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(this.secretKey),
+                { name: 'PBKDF2' },
+                false,
+                ['deriveBits', 'deriveKey']
+            );
+
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: encoder.encode('salt'),
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-CBC', length: 256 },
+                false,
+                ['decrypt']
+            );
+
+            // Desencriptar
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-CBC', iv: iv },
+                key,
+                data
+            );
+
+            return decoder.decode(decrypted);
+        } catch (error) {
+            console.error('ERROR DE PARSEO');
+        }
+        return null;
     }
 }
 
@@ -1439,146 +1587,6 @@ class MessageBadgeController {
     }
 }
 
-class _cu {
-    constructor() {
-        // La clave debe tener exactamente 32 bytes para AES-256
-        this.secretKey = this.normalizeKey('MiClaveSecretaSuperSegura123!@#');
-    }
-
-    // Normaliza la clave a 32 bytes usando el mismo método que PHP
-    normalizeKey(key) {
-        const hash = new TextEncoder().encode(key);
-        const normalized = new Uint8Array(32);
-
-        for (let i = 0; i < 32; i++) {
-            normalized[i] = hash[i % hash.length];
-        }
-
-        return normalized;
-    }
-
-    // Convierte Uint8Array a Base64 (más compatible que hex)
-    toBase64(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return btoa(binary);
-    }
-
-    // Convierte Base64 a Uint8Array
-    fromBase64(base64) {
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-        return bytes;
-    }
-
-    // Encripta un string
-    async encrypt(plaintext) {
-        try {
-            // Genera IV aleatorio (16 bytes para AES)
-            const iv = crypto.getRandomValues(new Uint8Array(16));
-
-            // Importa la clave
-            const key = await crypto.subtle.importKey(
-                'raw',
-                this.secretKey,
-                { name: 'AES-CBC', length: 256 },
-                false,
-                ['encrypt']
-            );
-
-            // Convierte el texto a bytes
-            const encoder = new TextEncoder();
-            const data = encoder.encode(plaintext);
-
-            // Encripta
-            const encrypted = await crypto.subtle.encrypt(
-                { name: 'AES-CBC', iv: iv },
-                key,
-                data
-            );
-
-            // Combina IV + datos encriptados
-            const combined = new Uint8Array(iv.length + encrypted.byteLength);
-            combined.set(iv, 0);
-            combined.set(new Uint8Array(encrypted), iv.length);
-
-            // Retorna en Base64
-            return this.toBase64(combined);
-        } catch (error) {
-            console.error('Error detallado al encriptar:', error);
-            throw new Error('Error al encriptar: ' + error.message);
-        }
-    }
-
-    // Desencripta un string
-    async decrypt(encryptedBase64) {
-        try {
-            // Convierte de Base64 a bytes
-            const combined = this.fromBase64(encryptedBase64);
-
-            // Verifica que tenga el tamaño mínimo (IV + al menos un bloque)
-            if (combined.length < 32) {
-                throw new Error('Datos encriptados inválidos: muy cortos');
-            }
-
-            // Extrae IV (primeros 16 bytes) y datos encriptados
-            const iv = combined.slice(0, 16);
-            const encrypted = combined.slice(16);
-
-            // Verifica que los datos encriptados sean múltiplo de 16 (tamaño de bloque AES)
-            if (encrypted.length % 16 !== 0) {
-                throw new Error('Datos encriptados inválidos: tamaño incorrecto');
-            }
-
-            // Importa la clave
-            const key = await crypto.subtle.importKey(
-                'raw',
-                this.secretKey,
-                { name: 'AES-CBC', length: 256 },
-                false,
-                ['decrypt']
-            );
-
-            // Desencripta
-            const decrypted = await crypto.subtle.decrypt(
-                { name: 'AES-CBC', iv: iv },
-                key,
-                encrypted
-            );
-
-            // Convierte bytes a string
-            const decoder = new TextDecoder();
-            return decoder.decode(decrypted);
-        } catch (error) {
-            console.error('Error detallado al desencriptar:', error);
-            console.error('Longitud de datos:', encryptedBase64.length);
-            throw new Error('Error al desencriptar: ' + error.message);
-        }
-    }
-}
-
-async function ejemplo() {
-
-    const crypto = new _cu();
-    const textoOriginal = 'Hola, este es un mensaje secreto';
-    const encriptado = await crypto.encrypt(textoOriginal);
-    console.log('Texto original:', textoOriginal);
-    console.log('Encriptado:', encriptado);
-
-    // Desencriptar
-    const desencriptado = await crypto.decrypt(encriptado);
-    console.log('Desencriptado:', desencriptado);
-
-}
-
-// Ejecutar ejemplo
-// ejemplo().catch(console.error);
 
 document.addEventListener('DOMContentLoaded', async () => {
     _windowL = new Loading();

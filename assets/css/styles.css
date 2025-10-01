@@ -97,7 +97,7 @@ body{position:relative}
 @media (max-width:768px){
 .columna{flex:1 1 100%}
 }
-.itemEntity{border-radius:20px;color:#fff;padding:10px 30px;cursor:pointer;font-family:dinFontLight,sans-serif!important;font-size:25px;text-shadow:3px 3px 4px rgba(0,0,0,2.5);transition:all .2s ease}
+.itemEntity{border-radius:20px;color:#fff;padding:10px 30px;cursor:pointer;font-family:dinFontLight,sans-serif!important;font-size:25px;text-shadow:3px 3px 4px rgba(0,0,0,2.5);transition:all .2s ease;margin:10px auto}
 .itemEntity:hover{-webkit-box-shadow:5px 6px 15px 0 #000!important;-moz-box-shadow:5px 6px 15px 0 #000!important;box-shadow:5px 6px 15px 0 #000!important}
 .hidden-card{display:none}
 .card-microsite-eecb4{width:60%;z-index:1002;position:absolute;top:120px;display:none;opacity:0}
