@@ -495,7 +495,7 @@ class SessionController {
 
     async setVariable() {
         const cS = new _cu();
-        const encriptado = await cS.encrypt(JSON.stringify(this.tokenVar));
+        const encriptado = await cS.e(JSON.stringify(this.tokenVar));
         const tokenStorage = encriptado;
         localStorage.setItem("dataToken", tokenStorage);
     }
@@ -504,7 +504,7 @@ class SessionController {
         const cS = new _cu();
         const tokenStorage = await localStorage.getItem("dataToken");
         if (!tokenStorage) return null;
-        const desencriptado = await cS.decrypt(tokenStorage);
+        const desencriptado = await cS.d(tokenStorage);
         if (!desencriptado) return null;
         return JSON.parse(desencriptado);
     }
@@ -702,7 +702,7 @@ class EntityModalController {
         this.lbl_Email.innerText = this.entity.email;
         const cry = new _cu();
         const dataSend = { id: this.entity.id };
-        const encrypted = await cry.encrypt(JSON.stringify(dataSend));
+        const encrypted = await cry.e(JSON.stringify(dataSend));
         const encoded = encodeURIComponent(encrypted);
         this.lbl_LinkDocument.setAttribute('href', ROUTE_API + 'DownloadFileController.php?data=' + encoded);
         const funcHide = () => {
@@ -1341,7 +1341,7 @@ class JsonResponseHandler {
             const json = await response.json();
 
             if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
-            const decrypt = await cry.decrypt(json.data);
+            const decrypt = await cry.d(json.data);
             const dataRes = JSON.parse(decrypt);
             console.log("🚀 ~ JsonResponseHandler ~ post ~ dataRes:", dataRes)
 
@@ -1383,7 +1383,7 @@ class JsonResponseHandler {
             const json = await response.json();
 
             if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
-            const decrypt = await cry.decrypt(json.data);
+            const decrypt = await cry.d(json.data);
             const dataRes = JSON.parse(decrypt);
             console.log("🚀 ~ JsonResponseHandler ~ get ~ dataRes:", dataRes)
 
@@ -1410,12 +1410,12 @@ class JsonResponseHandler {
         if (isFormData) {
             const dataToEncrypt = data.get(keyData);
             if (!dataToEncrypt) return null;
-            const dataEncrypted = await cry.encrypt(JSON.stringify(dataToEncrypt));
+            const dataEncrypted = await cry.e(JSON.stringify(dataToEncrypt));
             data.set(keyData, dataEncrypted);
             dataSend = data;
         } else {
             const dataFormToSend = new FormData();
-            const dataEncrypted = await cry.encrypt(JSON.stringify(data));
+            const dataEncrypted = await cry.e(JSON.stringify(data));
             dataFormToSend.append(keyData, dataEncrypted);
             dataSend = dataFormToSend;
         }
@@ -1425,7 +1425,7 @@ class JsonResponseHandler {
     static async encryptGetParams(data) {
         if (!data) return null;
         const cry = new _cu();
-        const dataEncrypted = await cry.encrypt(JSON.stringify(data));
+        const dataEncrypted = await cry.e(JSON.stringify(data));
         return {
             data: (dataEncrypted)
         };
@@ -1437,7 +1437,7 @@ class _cu {
         this.secretKey = 'mi-clave-secreta-muy-segura';
     }
 
-    async encrypt(text) {
+    async e(text) {
         const encoder = new TextEncoder();
         const data = encoder.encode(text);
 
@@ -1483,7 +1483,7 @@ class _cu {
         return (encryptedTxt);
     }
 
-    async decrypt(encryptedText) {
+    async d(encryptedText) {
         try {
             const encoder = new TextEncoder();
             const decoder = new TextDecoder();
