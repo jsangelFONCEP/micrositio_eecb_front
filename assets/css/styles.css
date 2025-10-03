@@ -121,7 +121,7 @@ body{position:relative}
 .btn-logout:active,.btn-logout:hover{background-color:var(--main-green);color:#fff}
 .btn-m:hover{-webkit-box-shadow:5px 6px 15px 0 #000!important;-moz-box-shadow:5px 6px 15px 0 #000!important;box-shadow:5px 6px 15px 0 #000!important}
 .btn-m{font-family:dinFontLight,sans-serif!important;font-size:25px!important;transition:all .3s ease;background-color:var(--main-green);color:#fff;outline:0;border:none;border-radius:15px;text-shadow:3px 3px 4px rgba(0,0,0,2.5)}
-#overlayLoading{font-size:35px;position:absolute;top:0;left:0;width:0;height:100%;z-index:3000;display:flex;justify-content:center;align-items:center;transition:all .3s ease;animation:changeBackground 5s infinite;background-color:#000032b4;opacity:0}
+#overlayLoading{font-size:35px;position:absolute;top:0;left:0;width:0;height:100%;z-index:100000;display:flex;justify-content:center;align-items:center;transition:all .3s ease;animation:changeBackground 5s infinite;background-color:#000032b4;opacity:0;overflow:hidden}
 #overlayLoading.show{width:100%;opacity:1}
 #txtLoading{font-size:35px;color:#fff;font-family:dinFontLight,sans-serif!important}
 .loading.dots{display:flex;justify-content:center;align-items:center;gap:8px}
@@ -168,3 +168,18 @@ body{position:relative}
 #resetPasswordContainer .help-text{font-size:20px}
 #step_reset1,#step_reset2{display:none}
 #step_reset1.show,#step_reset2.show{display:block}
+.manualsView{position:absolute;top:0;left:0;width:0;height:100%;background:#000032;background:linear-gradient(131deg,#000032 0,#020070 60%,#d700fe 90%);z-index:9999;box-sizing:border-box;transition:all .3s ease;text-align:center;overflow-x:visible}
+.manualsView .containerManuals{display:none;padding:20px 5%;overflow-y:auto;max-height:800px}
+.manualsView.expanded{width:100%}
+.manualsView.expanded .containerManuals{display:block}
+.manualsView .manualItem{display:inline-block;width:300px;text-align:center;color:#fff;text-shadow:3px 3px 4px rgba(0,0,0,2.5);transition:all .3s ease;margin:20px 15px}
+.manualsView .manualItem:hover{transform:scale(1.1)}
+.manualsView .manualItem .imgManual{width:142px;height:179px;background-image:url(../../resources/file_icon.png);background-size:100% 100%;background-repeat:no-repeat;margin:auto}
+.manualsView .manualItem .labelManual{height:86px;overflow:hidden;cursor:pointer}
+.manualsView .titleManuals{width:100%;text-align:center;margin-bottom:15px}
+.manualsView .titleManuals .title-m-eecb{font-size:40px;position:relative!important;width:100%;text-align:center;width:auto;left:auto}
+.manualsView .titleManuals .title-m-eecb::before{bottom:12px}
+.manualsView .btnSlideManuals{position:absolute;right:-60px;width:120px;height:60px;background-color:#f5ca0b;top:calc(50% - 30px);font-family:dinFontBold,sans-serif!important;padding:5px;border-radius:8px;z-index:999999;cursor:pointer;transition:all .3s ease}
+.manualsView .btnSlideManuals:hover{box-shadow:0 2px 5px rgba(0,0,0,2.5)}
+.manualsView .btnSlideManuals::after{content:'<';width:50px;height:50px;display:block;border-radius:50%;border:solid 5px #fff;color:#fff;position:absolute;left:5px;font-size:30px}
+.manualsView .btnSlideManuals::before{content:'i';width:50px;height:50px;display:block;border-radius:50%;border:solid 5px #fff;color:#fff;position:absolute;right:5px;font-size:30px}
