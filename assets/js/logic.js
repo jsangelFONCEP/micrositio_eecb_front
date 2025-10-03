@@ -1380,7 +1380,6 @@ class AbstractInput {
 
 class JsonResponseHandler {
     static async post(url, data) {
-        console.log("🚀 ~ JsonResponseHandler ~ post ~ data:", data)
         try {
             const cry = new _cu();
             const dataToSend = await JsonResponseHandler.encryptPostFormData(data, cry);
@@ -1401,7 +1400,6 @@ class JsonResponseHandler {
             if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
             const decrypt = await cry.d(json.data);
             const dataRes = JSON.parse(decrypt);
-            console.log("🚀 ~ JsonResponseHandler ~ post ~ dataRes:", dataRes)
 
             if (!('success' in dataRes) || !('msg' in dataRes) || !('timestamp' in dataRes))
                 throw new Error('Respuesta con formato inesperado');
@@ -1419,7 +1417,6 @@ class JsonResponseHandler {
     }
 
     static async get(url, params = {}) {
-        console.log("🚀 ~ JsonResponseHandler ~ get ~ params:", params)
         const cry = new _cu();
         const paramsToSend = await JsonResponseHandler.encryptGetParams(params, cry);
         if (!paramsToSend) console.error('ERROR AL REALIZAR PETICIÓN')
@@ -1443,7 +1440,6 @@ class JsonResponseHandler {
             if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
             const decrypt = await cry.d(json.data);
             const dataRes = JSON.parse(decrypt);
-            console.log("🚀 ~ JsonResponseHandler ~ get ~ dataRes:", dataRes)
 
             if (!('success' in dataRes) || !('msg' in dataRes) || !('timestamp' in dataRes))
                 throw new Error('Respuesta con formato inesperado');
