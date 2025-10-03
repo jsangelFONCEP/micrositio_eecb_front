@@ -1,4 +1,4 @@
-let _windowCV, _windowEIS = {}, _windowEN = {}, _windowCS, _windowL, _windowO, _windowE;
+let _windowCV, _windowEIS = {}, _windowEN = {}, _windowSC, _windowL, _windowO, _windowE;
 
 // let ROUTE_API = 'http://10.160.3.244:82/controllers/';
 let ROUTE_API = 'http://localhost/FONCEP/MICROSITIO/api.foncep.gov.co/api.foncep.gov.co/controllers/';
@@ -373,8 +373,8 @@ class FormLoginController {
         if (form) {
             const res = await JsonResponseHandler.post(ROUTE_API + 'LoginController.php', form);
             if (res.success) {
-                if (res.data[0]) {
-                    _windowCS = new SessionController(res.data[0], res.data[1]);
+                if (res.data) {
+                    _windowSC = new SessionController(res.data);
                     setTimeout(() => {
                         VIEW_CONTROLLER.showView('dashboardView');
                     }, 500);
@@ -520,12 +520,8 @@ class ResetPasswordController {
 }
 
 class SessionController {
-    constructor(idUser, token) {
-        // this.cryptoHelper = null;
-        this.tokenVar = {
-            user: idUser,
-            token: token
-        }
+    constructor(info) {
+        this.tokenVar = info;
         this.init();
     }
     async init() {
@@ -537,6 +533,17 @@ class SessionController {
         const encriptado = await cS.e(JSON.stringify(this.tokenVar));
         const tokenStorage = encriptado;
         localStorage.setItem("dataToken", tokenStorage);
+    }
+
+    async isValidSession() {
+        const sessionInfo = await SessionController.getVariable();
+        if (!sessionInfo) return false;
+        const startDateStr = sessionInfo.date;
+        const startDate = new Date(startDateStr.replace(' ', 'T'));
+        const now = new Date();
+        const difMs = now - startDate;
+        const difH = difMs / (1000 * 60 * 60);
+        return difH <= 1;
     }
 
     static async getVariable() {
@@ -629,7 +636,7 @@ class DashboardView {
         await _windowL.openFor();
         const infoSession = await SessionController.getVariable();
         if (infoSession) {
-            await this.loadEntitiesDebts(infoSession.user);
+            await this.loadEntitiesDebts(infoSession.id);
             await this.loadEntities();
         } else console.error('CERRAR SESIÓN');
         this.title.innerText = 'Bienvenido(a) ' + this.entityLoggedName + ":";
@@ -788,7 +795,7 @@ class ManageEntityModuleController {
         delete this.entitiesInSelect[this.entityId];
         const infoSession = await SessionController.getVariable();
         if (infoSession) {
-            await this.loadEntitiesLoad(infoSession.user);
+            await this.loadEntitiesLoad(infoSession.id);
             await this.loadOptionsInSelect();
             await this.updateDisplaySelectedEntities();
         } else console.error('CERRAR SESIÓN')
@@ -1643,14 +1650,20 @@ class MessageBadgeController {
 document.addEventListener('DOMContentLoaded', async () => {
     _windowL = new Loading();
     _windowO = new OverlayBlur();
-    if (_windowCS) {
+    if (_windowSC && await _windowSC.isValidSession()) {
         VIEW_CONTROLLER.showView('dashboardView');
     } else {
         const session = await SessionController.getVariable();
         if (session) {
-            _windowCS = await new SessionController(session.user, session.token);
-            await VIEW_CONTROLLER.showView('dashboardView');
+            _windowSC = await new SessionController(session);
+            if (await _windowSC.isValidSession()) {
+                await VIEW_CONTROLLER.showView('dashboardView');
+            } else {
+                await SessionController.removeVariable();
+                VIEW_CONTROLLER.showView('mainView');
+            }
         } else {
+            await SessionController.removeVariable();
             VIEW_CONTROLLER.showView('mainView');
         }
     }
