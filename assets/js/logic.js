@@ -145,11 +145,38 @@ class CustomSelectController {
             this.handleShowOptions(0, !this.containerOptions.classList.value.includes('show'))
         });
 
+        this.input.addEventListener('input', (e) => {
+            this.filterOptions(e.target.value)
+        });
+
         this.input.addEventListener('focusout', () => {
             setTimeout(() => {
                 this.handleShowOptions(0, false)
             }, 300);
         });
+    }
+
+    filterOptions(value) {
+        const searchText = (value) ? value.toLowerCase() : "";
+        const items = this.containerOptions.querySelectorAll('.select-option');
+        let changes = 0;
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.classList.remove('hide');
+            } else {
+                item.classList.add('hide');
+                changes++;
+            }
+        });
+        const itemsEmpty = this.containerOptions.querySelectorAll('.empty-option');
+        itemsEmpty.forEach(item => {
+            if (changes == items.length)
+                item.classList.remove('hide');
+            else
+                item.classList.add('hide');
+        });
+
     }
 
     handleShowOptions(type, state) {
@@ -159,8 +186,8 @@ class CustomSelectController {
         else this.containerOptions.classList.remove(TYPES[type]);
     }
 
-    loadOptions(options, refId, refText, actionClick = () => { }, exclude = { ref: '', list_excludes: [] }) {
-        this.containerOptions.innerHTML = '';
+    loadOptions(options, refId, refText, actionClick = () => { }, exclude = { ref: '', list_excludes: [], conditions: {} }) {
+        this.containerOptions.innerHTML = '<div class="empty-option hide">No hay registros según el criterio de búsqueda</div>';
         let listOptions = Object.keys(options);
         let flagArray = Array.isArray(options);
         if (flagArray)
@@ -170,14 +197,26 @@ class CustomSelectController {
         listOptions.forEach((key) => {
             const item = (flagArray) ? key : options[key];
             const id = (flagArray) ? item[refId] : key;
-            let valExclude = item[exclude.ref] ?? null;
-            valExclude = (valExclude != null) ? valExclude.toString() : valExclude;
-            if (valExclude != null && exclude.list_excludes.includes(valExclude)) return;
+            if (exclude) {
+                let valExclude = item[exclude.ref] ?? null;
+                valExclude = (valExclude != null) ? valExclude.toString() : valExclude;
+                if (valExclude != null && exclude.list_excludes.includes(valExclude)) return;
+                if (!this.evalConditions(item, exclude.conditions)) return;
+            }
             const containerOption = this.createOption(item[refText], id, actionClick);
             this.containerOptions.appendChild(containerOption);
             if (flagArray) optionsToSave[id] = item;
         });
         this.options = optionsToSave;
+    }
+
+    evalConditions(item, conditions) {
+        const keys = Object.keys(conditions);
+        for (let key of keys) {
+            const value = conditions[key];
+            if (item[key] != value) return false;
+        }
+        return true;
     }
 
     createOption(text, value, func) {
@@ -227,7 +266,7 @@ class MainView {
             _windowL.openFor();
             const entityId = e.target.getAttribute('value');
             VIEW_CONTROLLER.showView('registerView', { entityId });
-        }, { ref: 'identificador', list_excludes: ['0'] });
+        }, { ref: 'identificador', list_excludes: ['0'], conditions: { id: null } });
     }
 
     async loadEntities() {
@@ -765,7 +804,8 @@ class ManageEntityModuleController {
                 for (let item of res.data.entities) {
                     const entity = {
                         ..._windowEN[item.id],
-                        file: true
+                        file: true,
+                        file_id: item.a_id
                     };
                     delete this.entitiesInSelect[item.id];
                     this.selectedEntities[item.id] = entity;
@@ -800,24 +840,25 @@ class ManageEntityModuleController {
         }
     }
 
-    updateDisplaySelectedEntities() {
+    async updateDisplaySelectedEntities() {
         const keys = Object.keys(this.selectedEntities);
         this.containerEntities.innerHTML = (keys.length > 0) ? '' : '<div class="flex-center-items h-100 w-100">No hay entidades seleccionadas</div>';
         const listWithoutFile = [];
-        keys.forEach((item) => {
+        const cry = new _cu();
+        keys.forEach(async (item) => {
             const entity = this.selectedEntities[item];
             if (!entity.file) {
                 listWithoutFile.push(item);
                 return;
             }
             this.containerEntities.appendChild(
-                this.createItemEntity(entity.nombre, entity.identificador, entity.file)
+                await this.createItemEntity(entity.nombre, entity.identificador, entity.file, cry, entity['file_id'] ?? null)
             );
         });
-        listWithoutFile.forEach((item) => {
+        listWithoutFile.forEach(async (item) => {
             const entity = this.selectedEntities[item];
             this.containerEntities.appendChild(
-                this.createItemEntity(entity.nombre, entity.identificador, entity.file)
+                await this.createItemEntity(entity.nombre, entity.identificador, entity.file, cry, entity['file_id'] ?? null)
             );
         });
     }
@@ -835,8 +876,8 @@ class ManageEntityModuleController {
         }, 500);
     }
 
-    createItemEntity(text, id, file) {
-        const item = document.createElement('label');
+    async createItemEntity(text, id, file, cry, file_id) {
+        const item = document.createElement('a');
         item.innerText = text;
         if (!file) {
             const btnRemove = document.createElement('a');
@@ -849,6 +890,13 @@ class ManageEntityModuleController {
                 funcRemove();
             });
             item.appendChild(btnRemove);
+        }
+        if (file_id) {
+            const dataSend = { id: file_id };
+            const encrypted = await cry.e(JSON.stringify(dataSend));
+            const encoded = encodeURIComponent(encrypted);
+            item.setAttribute('href', ROUTE_API + 'DownloadFileController.php?data=' + encoded);
+            item.setAttribute('target', '_blank');
         }
         item.classList.add('item-entity');
         item.classList.add((file) ? 'bg-main-green' : 'bg-secondary');
@@ -887,11 +935,14 @@ class ManageEntityModuleController {
     }
 
     async loadFile(file, entityId) {
-        const form = {};
-        form['files[]'] = file;
-        form['file_entity'] = entityId;
-        form['current_entity'] = this.entityId;
-        form['action'] = 'load';
+        const form = new FormData();
+        const formData = {};
+        form.append('files[]', file);
+        formData['file_entity'] = entityId;
+        formData['current_entity'] = this.entityId;
+        formData['action'] = 'load';
+        form.append('formData', JSON.stringify(formData));
+
         const res = await JsonResponseHandler.post(ROUTE_API + 'ArchivoController.php', form);
         if (res.success) {
             if (res.data) {
@@ -1129,9 +1180,9 @@ class FormRegisterController {
             this.inputFile.showMessage('Debe agregar al menos una entidad', 'error')
             return false;
         }
-        form['entidad_id'] = this.entity.identificador;
-        form['action'] = 'create';
-        form.append('formData', formData);
+        formData['entidad_id'] = this.entity.identificador;
+        formData['action'] = 'create';
+        form.append('formData', JSON.stringify(formData));
         if (!await this.validateNit()) errors++;
         return (errors > 0) ? null : form;
     }
@@ -1161,7 +1212,7 @@ class FormRegisterController {
                         title: this.entity.nombre,
                         body: `Muchas gracias por su inscripción de datos,
                                 le confirmamos que al correo:  
-                                <b>${form.get('txt_Email')}</b>, le
+                                <b>${res.data.email}</b>, le
                                 llegará el usuario y contraseña para
                                 consultar los estados de cuentas.`
                     });
@@ -1327,6 +1378,7 @@ class JsonResponseHandler {
         try {
             const cry = new _cu();
             const dataToSend = await JsonResponseHandler.encryptPostFormData(data, cry);
+            // return false;
             if (!dataToSend) console.error('ERROR AL ENVIAR PETICIÓN')
             const response = await fetch(url, {
                 method: 'POST',
@@ -1410,7 +1462,7 @@ class JsonResponseHandler {
         if (isFormData) {
             const dataToEncrypt = data.get(keyData);
             if (!dataToEncrypt) return null;
-            const dataEncrypted = await cry.e(JSON.stringify(dataToEncrypt));
+            const dataEncrypted = await cry.e(dataToEncrypt);
             data.set(keyData, dataEncrypted);
             dataSend = data;
         } else {

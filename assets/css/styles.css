@@ -51,7 +51,8 @@ body{position:relative}
 .container-options{display:none;background-color:#fff;margin:auto;position:absolute;top:-1px;width:90%;border:2px solid var(--main-green)!important;max-height:200px;overflow:auto;z-index:1002}
 .container-options.show{display:block}
 .container-options.blockshow{display:block!important}
-.container-options .select-option{position:relative;text-align:left!important;padding:1px 1rem;z-index:1005}
+.container-options .empty-option,.container-options .select-option{position:relative;text-align:left!important;padding:1px 1rem;z-index:1005}
+.container-options .empty-option.hide,.container-options .select-option.hide{display:none}
 .container-options .select-option:hover{background-color:var(--main-green);cursor:pointer}
 .overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:999;opacity:0;visibility:hidden;transition:all .4s cubic-bezier(.4,0,.2,1)}
 .overlay.active{opacity:1;visibility:visible}
@@ -85,7 +86,7 @@ body{position:relative}
 .fileStateAccounts .info-file{font-size:15px;padding:0;margin:0}
 .fileStateAccounts .link-file{text-decoration:none;font-weight:600;color:#2d063f}
 .entity-list{display:block;float:left;width:100%}
-.entity-list .item-entity{width:100%;box-sizing:border-box;padding:5px 30px 5px 10px;text-align:center;transition:all .3s ease;position:relative}
+.entity-list .item-entity{width:100%;box-sizing:border-box;padding:5px 30px 5px 10px;text-align:center;transition:all .3s ease;position:relative;display:block}
 .messageContainer{display:inline-block;width:100%;box-sizing:border-box}
 #containerEntities{height:120px;width:100%;overflow:auto}
 .flex-center-items{display:flex;align-items:center;justify-content:center;text-align:center}
