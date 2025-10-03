@@ -1,4 +1,4 @@
-let _windowCV, _windowEIS = {}, _windowEN = {}, _windowCS, _windowL, _windowO, _windowE;
+let _windowCV, _windowEIS = {}, _windowEN = {}, _windowSC, _windowL, _windowO, _windowE;
 
 let ROUTE_API = 'http://10.160.3.34:82/controllers/';
 
@@ -144,11 +144,38 @@ class CustomSelectController {
             this.handleShowOptions(0, !this.containerOptions.classList.value.includes('show'))
         });
 
+        this.input.addEventListener('input', (e) => {
+            this.filterOptions(e.target.value)
+        });
+
         this.input.addEventListener('focusout', () => {
             setTimeout(() => {
                 this.handleShowOptions(0, false)
             }, 300);
         });
+    }
+
+    filterOptions(value) {
+        const searchText = (value) ? value.toLowerCase() : "";
+        const items = this.containerOptions.querySelectorAll('.select-option');
+        let changes = 0;
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.classList.remove('hide');
+            } else {
+                item.classList.add('hide');
+                changes++;
+            }
+        });
+        const itemsEmpty = this.containerOptions.querySelectorAll('.empty-option');
+        itemsEmpty.forEach(item => {
+            if (changes == items.length)
+                item.classList.remove('hide');
+            else
+                item.classList.add('hide');
+        });
+
     }
 
     handleShowOptions(type, state) {
@@ -158,8 +185,8 @@ class CustomSelectController {
         else this.containerOptions.classList.remove(TYPES[type]);
     }
 
-    loadOptions(options, refId, refText, actionClick = () => { }, exclude = { ref: '', list_excludes: [] }) {
-        this.containerOptions.innerHTML = '';
+    loadOptions(options, refId, refText, actionClick = () => { }, exclude = { ref: '', list_excludes: [], conditions: {} }) {
+        this.containerOptions.innerHTML = '<div class="empty-option hide">No hay registros según el criterio de búsqueda</div>';
         let listOptions = Object.keys(options);
         let flagArray = Array.isArray(options);
         if (flagArray)
@@ -169,14 +196,26 @@ class CustomSelectController {
         listOptions.forEach((key) => {
             const item = (flagArray) ? key : options[key];
             const id = (flagArray) ? item[refId] : key;
-            let valExclude = item[exclude.ref] ?? null;
-            valExclude = (valExclude != null) ? valExclude.toString() : valExclude;
-            if (valExclude != null && exclude.list_excludes.includes(valExclude)) return;
+            if (exclude) {
+                let valExclude = item[exclude.ref] ?? null;
+                valExclude = (valExclude != null) ? valExclude.toString() : valExclude;
+                if (valExclude != null && exclude.list_excludes.includes(valExclude)) return;
+                if (!this.evalConditions(item, exclude.conditions)) return;
+            }
             const containerOption = this.createOption(item[refText], id, actionClick);
             this.containerOptions.appendChild(containerOption);
             if (flagArray) optionsToSave[id] = item;
         });
         this.options = optionsToSave;
+    }
+
+    evalConditions(item, conditions) {
+        const keys = Object.keys(conditions);
+        for (let key of keys) {
+            const value = conditions[key];
+            if (item[key] != value) return false;
+        }
+        return true;
     }
 
     createOption(text, value, func) {
@@ -226,7 +265,7 @@ class MainView {
             _windowL.openFor();
             const entityId = e.target.getAttribute('value');
             VIEW_CONTROLLER.showView('registerView', { entityId });
-        }, { ref: 'identificador', list_excludes: ['0'] });
+        }, { ref: 'identificador', list_excludes: ['0'], conditions: { id: null } });
     }
 
     async loadEntities() {
@@ -316,14 +355,14 @@ class FormLoginController {
     }
 
     validateForm() {
-        const form = new FormData();
+        const form = {};
         const keysFields = Object.keys(this.formFields);
         let errors = 0;
         for (let keyInput of keysFields) {
             if (!this.formFields[keyInput].class.validateValue()) errors++;
-            form.append(keyInput, this.formFields[keyInput].class.element.value)
+            form[keyInput] = this.formFields[keyInput].class.element.value;
         }
-        form.append('action', 'login');
+        form['action'] = 'login';
         return (errors > 0) ? null : form;
     }
 
@@ -333,8 +372,8 @@ class FormLoginController {
         if (form) {
             const res = await JsonResponseHandler.post(ROUTE_API + 'LoginController.php', form);
             if (res.success) {
-                if (res.data[0]) {
-                    _windowCS = new SessionController(res.data[0], res.data[1]);
+                if (res.data) {
+                    _windowSC = new SessionController(res.data);
                     setTimeout(() => {
                         VIEW_CONTROLLER.showView('dashboardView');
                     }, 500);
@@ -426,10 +465,10 @@ class ResetPasswordController {
             this.messageController.showMessage('Por favor llene todos los campos', 'error');
             return false;
         } else {
-            const form = new FormData();
-            form.append('action', 'verify');
-            form.append('nit', nit);
-            form.append('email', email);
+            const form = {};
+            form['action'] = 'verify';
+            form['nit'] = nit;
+            form['email'] = email;
             const res = await JsonResponseHandler.post(ROUTE_API + 'CodigoResController.php', form);
             if (res.success) {
                 this.messageController.showMessage('Se ha enviado un correo electrónico con el código de seguridad', 'success');
@@ -446,11 +485,11 @@ class ResetPasswordController {
             this.messageController.showMessage('Por favor ingrese el código', 'error');
             return false;
         } else {
-            const form = new FormData();
-            form.append('action', 'resetPwd');
-            form.append('code', code);
-            form.append('nit', nit);
-            form.append('email', email);
+            const form = {};
+            form['action'] = 'resetPwd';
+            form['code'] = code;
+            form['nit'] = nit;
+            form['email'] = email;
             const res = await JsonResponseHandler.post(ROUTE_API + 'CodigoResController.php', form);
             if (res.success) {
                 this.messageController.showMessage('Su contraseña ha sido reestablecida satisfactoriamente, se ha enviado un correo electrónico con las nuevas credenciales', 'success');
@@ -480,12 +519,8 @@ class ResetPasswordController {
 }
 
 class SessionController {
-    constructor(idUser, token) {
-        // this.cryptoHelper = null;
-        this.tokenVar = {
-            user: idUser,
-            token: token
-        }
+    constructor(info) {
+        this.tokenVar = info;
         this.init();
     }
     async init() {
@@ -494,17 +529,27 @@ class SessionController {
 
     async setVariable() {
         const cS = new _cu();
-        const encriptado = await cS.encrypt(JSON.stringify(this.tokenVar));
+        const encriptado = await cS.e(JSON.stringify(this.tokenVar));
         const tokenStorage = encriptado;
         localStorage.setItem("dataToken", tokenStorage);
+    }
+
+    async isValidSession() {
+        const sessionInfo = await SessionController.getVariable();
+        if (!sessionInfo) return false;
+        const startDateStr = sessionInfo.date;
+        const startDate = new Date(startDateStr.replace(' ', 'T'));
+        const now = new Date();
+        const difMs = now - startDate;
+        const difH = difMs / (1000 * 60 * 60);
+        return difH <= 1;
     }
 
     static async getVariable() {
         const cS = new _cu();
         const tokenStorage = await localStorage.getItem("dataToken");
-        console.log("🚀 ~ SessionController ~ getVariable ~ tokenStorage:", tokenStorage)
         if (!tokenStorage) return null;
-        const desencriptado = await cS.decrypt(tokenStorage);
+        const desencriptado = await cS.d(tokenStorage);
         if (!desencriptado) return null;
         return JSON.parse(desencriptado);
     }
@@ -590,7 +635,7 @@ class DashboardView {
         await _windowL.openFor();
         const infoSession = await SessionController.getVariable();
         if (infoSession) {
-            await this.loadEntitiesDebts(infoSession.user);
+            await this.loadEntitiesDebts(infoSession.id);
             await this.loadEntities();
         } else console.error('CERRAR SESIÓN');
         this.title.innerText = 'Bienvenido(a) ' + this.entityLoggedName + ":";
@@ -696,11 +741,15 @@ class EntityModalController {
         this.init();
     }
 
-    init() {
+    async init() {
         this.titleEntityModal.innerHTML = this.entity.nombre + '<br> NIT: ' + this.entity.nit;
         this.lbl_Phone.innerText = this.entity.telefono;
         this.lbl_Email.innerText = this.entity.email;
-        this.lbl_LinkDocument.setAttribute('href', ROUTE_API + 'DownloadFileController.php?id=' + this.entity.id);
+        const cry = new _cu();
+        const dataSend = { id: this.entity.id };
+        const encrypted = await cry.e(JSON.stringify(dataSend));
+        const encoded = encodeURIComponent(encrypted);
+        this.lbl_LinkDocument.setAttribute('href', ROUTE_API + 'DownloadFileController.php?data=' + encoded);
         const funcHide = () => {
             this.hide()
         }
@@ -745,7 +794,7 @@ class ManageEntityModuleController {
         delete this.entitiesInSelect[this.entityId];
         const infoSession = await SessionController.getVariable();
         if (infoSession) {
-            await this.loadEntitiesLoad(infoSession.user);
+            await this.loadEntitiesLoad(infoSession.id);
             await this.loadOptionsInSelect();
             await this.updateDisplaySelectedEntities();
         } else console.error('CERRAR SESIÓN')
@@ -761,7 +810,8 @@ class ManageEntityModuleController {
                 for (let item of res.data.entities) {
                     const entity = {
                         ..._windowEN[item.id],
-                        file: true
+                        file: true,
+                        file_id: item.a_id
                     };
                     delete this.entitiesInSelect[item.id];
                     this.selectedEntities[item.id] = entity;
@@ -796,24 +846,25 @@ class ManageEntityModuleController {
         }
     }
 
-    updateDisplaySelectedEntities() {
+    async updateDisplaySelectedEntities() {
         const keys = Object.keys(this.selectedEntities);
         this.containerEntities.innerHTML = (keys.length > 0) ? '' : '<div class="flex-center-items h-100 w-100">No hay entidades seleccionadas</div>';
         const listWithoutFile = [];
-        keys.forEach((item) => {
+        const cry = new _cu();
+        keys.forEach(async (item) => {
             const entity = this.selectedEntities[item];
             if (!entity.file) {
                 listWithoutFile.push(item);
                 return;
             }
             this.containerEntities.appendChild(
-                this.createItemEntity(entity.nombre, entity.identificador, entity.file)
+                await this.createItemEntity(entity.nombre, entity.identificador, entity.file, cry, entity['file_id'] ?? null)
             );
         });
-        listWithoutFile.forEach((item) => {
+        listWithoutFile.forEach(async (item) => {
             const entity = this.selectedEntities[item];
             this.containerEntities.appendChild(
-                this.createItemEntity(entity.nombre, entity.identificador, entity.file)
+                await this.createItemEntity(entity.nombre, entity.identificador, entity.file, cry, entity['file_id'] ?? null)
             );
         });
     }
@@ -831,8 +882,8 @@ class ManageEntityModuleController {
         }, 500);
     }
 
-    createItemEntity(text, id, file) {
-        const item = document.createElement('label');
+    async createItemEntity(text, id, file, cry, file_id) {
+        const item = document.createElement('a');
         item.innerText = text;
         if (!file) {
             const btnRemove = document.createElement('a');
@@ -845,6 +896,13 @@ class ManageEntityModuleController {
                 funcRemove();
             });
             item.appendChild(btnRemove);
+        }
+        if (file_id) {
+            const dataSend = { id: file_id };
+            const encrypted = await cry.e(JSON.stringify(dataSend));
+            const encoded = encodeURIComponent(encrypted);
+            item.setAttribute('href', ROUTE_API + 'DownloadFileController.php?data=' + encoded);
+            item.setAttribute('target', '_blank');
         }
         item.classList.add('item-entity');
         item.classList.add((file) ? 'bg-main-green' : 'bg-secondary');
@@ -884,10 +942,13 @@ class ManageEntityModuleController {
 
     async loadFile(file, entityId) {
         const form = new FormData();
+        const formData = {};
         form.append('files[]', file);
-        form.append('file_entity', entityId);
-        form.append('current_entity', this.entityId);
-        form.append('action', 'load');
+        formData['file_entity'] = entityId;
+        formData['current_entity'] = this.entityId;
+        formData['action'] = 'load';
+        form.append('formData', JSON.stringify(formData));
+
         const res = await JsonResponseHandler.post(ROUTE_API + 'ArchivoController.php', form);
         if (res.success) {
             if (res.data) {
@@ -1100,11 +1161,12 @@ class FormRegisterController {
             return false;
         }
         const form = new FormData();
+        const formData = {};
         const keysFields = Object.keys(this.formFields);
         let errors = 0;
         for (let keyInput of keysFields) {
             if (!this.formFields[keyInput].class.validateValue()) errors++;
-            form.append(keyInput, this.formFields[keyInput].class.element.value)
+            formData[keyInput] = this.formFields[keyInput].class.element.value;
         }
         if (errors > 0) {
             this.inputFile.showMessage('Complete correctamente la información de los campos', 'error')
@@ -1119,22 +1181,23 @@ class FormRegisterController {
             for (let keyEntity of keysEntities) {
                 form.append('files[]', this.selectedEntities[keyEntity].file);
             }
-            form.append('file_entities', keysEntities.join(','));
+            formData['file_entities'] = keysEntities.join(',');
         } else {
             this.inputFile.showMessage('Debe agregar al menos una entidad', 'error')
             return false;
         }
-        form.append('entidad_id', this.entity.identificador);
-        form.append('action', 'create');
+        formData['entidad_id'] = this.entity.identificador;
+        formData['action'] = 'create';
+        form.append('formData', JSON.stringify(formData));
         if (!await this.validateNit()) errors++;
         return (errors > 0) ? null : form;
     }
 
     async validateNit() {
-        const form = new FormData();
-        form.append('action', 'validateNit');
-        form.append('entity_id', this.entity.identificador);
-        form.append('nit', this.formFields.txt_NIT.class.element.value);
+        const form = {};
+        form['action'] = 'validateNit';
+        form['entity_id'] = this.entity.identificador;
+        form['nit'] = this.formFields.txt_NIT.class.element.value;
         const res = await JsonResponseHandler.post(ROUTE_API + 'EntidadController.php', form);
         if (res.success) {
             if (res.data.validation) return true;
@@ -1155,7 +1218,7 @@ class FormRegisterController {
                         title: this.entity.nombre,
                         body: `Muchas gracias por su inscripción de datos,
                                 le confirmamos que al correo:  
-                                <b>${form.get('txt_Email')}</b>, le
+                                <b>${res.data.email}</b>, le
                                 llegará el usuario y contraseña para
                                 consultar los estados de cuentas.`
                     });
@@ -1289,7 +1352,6 @@ class AbstractInput {
             if (!this.validations.regex.test(this.element.value)) isValid++;
         if (this.validations.equalsTo) {
             const elementEqualsTo = document.getElementById(this.validations.equalsTo);
-            console.log("🚀 ~ AbstractInput ~ validateValue ~ elementEqualsTo:", elementEqualsTo)
             if (elementEqualsTo && elementEqualsTo.value != this.element.value) isValid++;
         }
         this.showAlertInput(isValid == 0)
@@ -1317,15 +1379,17 @@ class AbstractInput {
 }
 
 class JsonResponseHandler {
-    static async post(url, data = {}) {
+    static async post(url, data) {
+        console.log("🚀 ~ JsonResponseHandler ~ post ~ data:", data)
         try {
-            const isFormData = data instanceof FormData;
+            const cry = new _cu();
+            const dataToSend = await JsonResponseHandler.encryptPostFormData(data, cry);
+            // return false;
+            if (!dataToSend) console.error('ERROR AL ENVIAR PETICIÓN')
             const response = await fetch(url, {
                 method: 'POST',
-                headers: isFormData ? {} : {
-                    'Content-Type': 'application/json'
-                },
-                body: isFormData ? data : JSON.stringify(data)
+                headers: {},
+                body: dataToSend
             });
 
             if (!response.ok) {
@@ -1334,11 +1398,15 @@ class JsonResponseHandler {
 
             const json = await response.json();
 
-            if (!('success' in json) || !('msg' in json) || !('timestamp' in json)) {
-                throw new Error('Respuesta con formato inesperado');
-            }
+            if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
+            const decrypt = await cry.d(json.data);
+            const dataRes = JSON.parse(decrypt);
+            console.log("🚀 ~ JsonResponseHandler ~ post ~ dataRes:", dataRes)
 
-            return (json);
+            if (!('success' in dataRes) || !('msg' in dataRes) || !('timestamp' in dataRes))
+                throw new Error('Respuesta con formato inesperado');
+
+            return (dataRes);
         } catch (error) {
             console.error('Error en la petición:', error);
             return {
@@ -1351,7 +1419,11 @@ class JsonResponseHandler {
     }
 
     static async get(url, params = {}) {
-        const query = new URLSearchParams(params).toString();
+        console.log("🚀 ~ JsonResponseHandler ~ get ~ params:", params)
+        const cry = new _cu();
+        const paramsToSend = await JsonResponseHandler.encryptGetParams(params, cry);
+        if (!paramsToSend) console.error('ERROR AL REALIZAR PETICIÓN')
+        const query = new URLSearchParams(paramsToSend).toString();
         const urlW = query ? `${url}?${query}` : url;
 
         try {
@@ -1367,10 +1439,16 @@ class JsonResponseHandler {
             }
 
             const json = await response.json();
-            if (!('success' in json) || !('msg' in json) || !('timestamp' in json)) {
+
+            if (!('data' in json)) throw new Error('Respuesta con formato inesperado');
+            const decrypt = await cry.d(json.data);
+            const dataRes = JSON.parse(decrypt);
+            console.log("🚀 ~ JsonResponseHandler ~ get ~ dataRes:", dataRes)
+
+            if (!('success' in dataRes) || !('msg' in dataRes) || !('timestamp' in dataRes))
                 throw new Error('Respuesta con formato inesperado');
-            }
-            return (json);
+
+            return (dataRes);
         } catch (error) {
             console.error('Error en la petición:', error);
             return {
@@ -1380,6 +1458,135 @@ class JsonResponseHandler {
                 data: null
             };
         }
+    }
+
+    static async encryptPostFormData(data, cry) {
+        if (!data) return null;
+        const isFormData = data instanceof FormData;
+        const keyData = 'formData';
+        let dataSend = null;
+        if (isFormData) {
+            const dataToEncrypt = data.get(keyData);
+            if (!dataToEncrypt) return null;
+            const dataEncrypted = await cry.e(dataToEncrypt);
+            data.set(keyData, dataEncrypted);
+            dataSend = data;
+        } else {
+            const dataFormToSend = new FormData();
+            const dataEncrypted = await cry.e(JSON.stringify(data));
+            dataFormToSend.append(keyData, dataEncrypted);
+            dataSend = dataFormToSend;
+        }
+        return dataSend;
+    }
+
+    static async encryptGetParams(data) {
+        if (!data) return null;
+        const cry = new _cu();
+        const dataEncrypted = await cry.e(JSON.stringify(data));
+        return {
+            data: (dataEncrypted)
+        };
+    }
+}
+
+class _cu {
+    constructor() {
+        this.secretKey = 'mi-clave-secreta-muy-segura';
+    }
+
+    async e(text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+
+        // Generar IV aleatorio
+        const iv = crypto.getRandomValues(new Uint8Array(16));
+
+        // Derivar clave desde el secreto
+        const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(this.secretKey),
+            { name: 'PBKDF2' },
+            false,
+            ['deriveBits', 'deriveKey']
+        );
+
+        const key = await crypto.subtle.deriveKey(
+            {
+                name: 'PBKDF2',
+                salt: encoder.encode('salt'),
+                iterations: 100000,
+                hash: 'SHA-256'
+            },
+            keyMaterial,
+            { name: 'AES-CBC', length: 256 },
+            false,
+            ['encrypt']
+        );
+
+        // Encriptar
+        const encrypted = await crypto.subtle.encrypt(
+            { name: 'AES-CBC', iv: iv },
+            key,
+            data
+        );
+
+        // Combinar IV + datos encriptados
+        const combined = new Uint8Array(iv.length + encrypted.byteLength);
+        combined.set(iv);
+        combined.set(new Uint8Array(encrypted), iv.length);
+
+        // Convertir a base64
+        const encryptedTxt = btoa(String.fromCharCode(...combined));
+        return (encryptedTxt);
+    }
+
+    async d(encryptedText) {
+        try {
+            const encoder = new TextEncoder();
+            const decoder = new TextDecoder();
+
+            // Decodificar base64
+            const combined = Uint8Array.from(atob(encryptedText), c => c.charCodeAt(0));
+
+            // Extraer IV y datos
+            const iv = combined.slice(0, 16);
+            const data = combined.slice(16);
+
+            // Derivar clave
+            const keyMaterial = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(this.secretKey),
+                { name: 'PBKDF2' },
+                false,
+                ['deriveBits', 'deriveKey']
+            );
+
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: encoder.encode('salt'),
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-CBC', length: 256 },
+                false,
+                ['decrypt']
+            );
+
+            // Desencriptar
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-CBC', iv: iv },
+                key,
+                data
+            );
+
+            return decoder.decode(decrypted);
+        } catch (error) {
+            console.error('ERROR DE PARSEO');
+        }
+        return null;
     }
 }
 
@@ -1438,158 +1645,24 @@ class MessageBadgeController {
     }
 }
 
-class _cu {
-    constructor() {
-        // La clave debe tener exactamente 32 bytes para AES-256
-        this.secretKey = this.normalizeKey('MiClaveSecretaSuperSegura123!@#');
-    }
-
-    // Normaliza la clave a 32 bytes usando el mismo método que PHP
-    normalizeKey(key) {
-        const hash = new TextEncoder().encode(key);
-        const normalized = new Uint8Array(32);
-
-        for (let i = 0; i < 32; i++) {
-            normalized[i] = hash[i % hash.length];
-        }
-
-        return normalized;
-    }
-
-    // Convierte Uint8Array a Base64 (más compatible que hex)
-    toBase64(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return btoa(binary);
-    }
-
-    // Convierte Base64 a Uint8Array
-    fromBase64(base64) {
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-        return bytes;
-    }
-
-    // Encripta un string
-    async encrypt(plaintext) {
-        try {
-            // Genera IV aleatorio (16 bytes para AES)
-            const iv = crypto.getRandomValues(new Uint8Array(16));
-
-            // Importa la clave
-            const key = await crypto.subtle.importKey(
-                'raw',
-                this.secretKey,
-                { name: 'AES-CBC', length: 256 },
-                false,
-                ['encrypt']
-            );
-
-            // Convierte el texto a bytes
-            const encoder = new TextEncoder();
-            const data = encoder.encode(plaintext);
-
-            // Encripta
-            const encrypted = await crypto.subtle.encrypt(
-                { name: 'AES-CBC', iv: iv },
-                key,
-                data
-            );
-
-            // Combina IV + datos encriptados
-            const combined = new Uint8Array(iv.length + encrypted.byteLength);
-            combined.set(iv, 0);
-            combined.set(new Uint8Array(encrypted), iv.length);
-
-            // Retorna en Base64
-            return this.toBase64(combined);
-        } catch (error) {
-            console.error('Error detallado al encriptar:', error);
-            throw new Error('Error al encriptar: ' + error.message);
-        }
-    }
-
-    // Desencripta un string
-    async decrypt(encryptedBase64) {
-        try {
-            // Convierte de Base64 a bytes
-            const combined = this.fromBase64(encryptedBase64);
-
-            // Verifica que tenga el tamaño mínimo (IV + al menos un bloque)
-            if (combined.length < 32) {
-                throw new Error('Datos encriptados inválidos: muy cortos');
-            }
-
-            // Extrae IV (primeros 16 bytes) y datos encriptados
-            const iv = combined.slice(0, 16);
-            const encrypted = combined.slice(16);
-
-            // Verifica que los datos encriptados sean múltiplo de 16 (tamaño de bloque AES)
-            if (encrypted.length % 16 !== 0) {
-                throw new Error('Datos encriptados inválidos: tamaño incorrecto');
-            }
-
-            // Importa la clave
-            const key = await crypto.subtle.importKey(
-                'raw',
-                this.secretKey,
-                { name: 'AES-CBC', length: 256 },
-                false,
-                ['decrypt']
-            );
-
-            // Desencripta
-            const decrypted = await crypto.subtle.decrypt(
-                { name: 'AES-CBC', iv: iv },
-                key,
-                encrypted
-            );
-
-            // Convierte bytes a string
-            const decoder = new TextDecoder();
-            return decoder.decode(decrypted);
-        } catch (error) {
-            console.error('Error detallado al desencriptar:', error);
-            console.error('Longitud de datos:', encryptedBase64.length);
-            throw new Error('Error al desencriptar: ' + error.message);
-        }
-    }
-}
-
-async function ejemplo() {
-
-    const crypto = new _cu();
-    const textoOriginal = 'Hola, este es un mensaje secreto';
-    const encriptado = await crypto.encrypt(textoOriginal);
-    console.log('Texto original:', textoOriginal);
-    console.log('Encriptado:', encriptado);
-
-    // Desencriptar
-    const desencriptado = await crypto.decrypt(encriptado);
-    console.log('Desencriptado:', desencriptado);
-
-}
-
-// Ejecutar ejemplo
-// ejemplo().catch(console.error);
 
 document.addEventListener('DOMContentLoaded', async () => {
     _windowL = new Loading();
     _windowO = new OverlayBlur();
-    if (_windowCS) {
+    if (_windowSC && await _windowSC.isValidSession()) {
         VIEW_CONTROLLER.showView('dashboardView');
     } else {
         const session = await SessionController.getVariable();
         if (session) {
-            _windowCS = await new SessionController(session.user, session.token);
-            await VIEW_CONTROLLER.showView('dashboardView');
+            _windowSC = await new SessionController(session);
+            if (await _windowSC.isValidSession()) {
+                await VIEW_CONTROLLER.showView('dashboardView');
+            } else {
+                await SessionController.removeVariable();
+                VIEW_CONTROLLER.showView('mainView');
+            }
         } else {
+            await SessionController.removeVariable();
             VIEW_CONTROLLER.showView('mainView');
         }
     }
