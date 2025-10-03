@@ -11,423 +11,471 @@
 </head>
 
 <body>
-    <div class="container m-auto">
-        <div class="row">
-            <div class="pt-2 pb-5 overflow-hidden" id="containerMicrositeEECB">
-                <div class="overlay" id="overlay"></div>
-                <h2 class="title-m-eecb" id="title-m-eecb">
-                    Saldemos nuestras <span class="din-bold">cuentas</span>
-                    <div class="arrow"></div>
-                </h2>
-                <div class="row viewContainer active" id="mainView">
-                    <div class="col-md-6 position-relative" id="mapImg">
-                        <div class="arrow" id="arrowMap"></div>
-                    </div>
-                    <div class="col-md-6 pt-5 px-4">
-                        <div>
-                            <div class="card card-microsite-eecb rounded-5 overflow-hidden border-0 shadow" id="card1">
-                                <div class="overflow-auto" id="containerContentEntity">
-                                    <div class="img-card palmas_img"></div>
-                                    <h4 class="card-title bg-main-green px-3  text-center">Cargue aquí sus estados
-                                        de cuenta</h4>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-1"></div>
-                                            <div class="col-md-10">
-                                                <div class="select-container text-center" id="selectEntity">
-                                                    <label class="label-input">Entidad</label>
-                                                    <div class="input-container">
-                                                        <input class="input input-microsite"
-                                                            placeholder="---  Buscar  ---">
-                                                        <div class="div-options">
-                                                            <div class="container-options">
-                                                                No hay entidades disponibles
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="card card-microsite-eecb rounded-5 overflow-auto border-0 shadow mt-5"
-                                id="card2">
-                                <div class="img-card monte_img"></div>
-                                <h4 class="card-title bg-main-green px-3 text-center" id="titleCardLogin">
-                                    Consulte estados de cuentas
-                                </h4>
-                                <div class="card-body">
-                                    <div class="row show" id="loginContainer">
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-10">
-                                            <div class="search-container">
-                                                <div class="mb-1 text-center">
-                                                    <label class="label-input w-100 text-center">Usuario</label>
-                                                    <input type="text" class="input-microsite text-center"
-                                                        placeholder="--- Ingrese usuario ---" value=""
-                                                        id="txt_EmailLogin">
-                                                </div>
-                                            </div>
-                                            <div class="search-container mb-2">
-                                                <div class="mb-1 text-center">
-                                                    <label class="label-input w-100 text-center">Contraseña</label>
-                                                    <input type="password" class="input-microsite text-center"
-                                                        placeholder="--- Ingrese contraseña ---" value=""
-                                                        id="txt_PasswordLogin">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-12">
-                                            <div id="messageContainer_Login" class="messageContainer"></div>
-                                        </div>
-                                        <div class="col-md-12 show-expanded">
-                                            <label class="help-text mb-4 nunito-light">
-                                                ¿Tienes problemas para ingresar?
-                                                <span id="btnResetView">
-                                                    Reestablecer contraseña
-                                                </span>
-                                            </label>
-                                            <div class="d-block text-center">
-                                                <button class="btn-m btn-submit rounded-5 shadow" id="btnLogin"
-                                                    type="button">
-                                                    Iniciar sesión
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row" id="resetPasswordContainer">
-                                        <label class="help-text mb-2 nunito-light" id="textHelp">
+    <div class="pt-2 pb-5 overflow-hidden" id="containerMicrositeEECB">
+        <div class="manualsView" id="manualsView">
+            <div class="containerManuals">
+                <div class="titleManuals">
+                    <label class="title-m-eecb">
+                        Archivos de interés
+                    </label>
+                </div>
+                <a class="manualItem"
+                    href="./resources/pdf/ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE CONVENIOS MHCP.pdf"
+                    title="ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE CONVENIOS MHCP.pdf"
+                    target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE
+                        CONVENIOS
+                        MHCP.pdf</label>
+                </a>
+                <a class="manualItem"
+                    href="./resources/pdf/ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 - MODELO.pdf"
+                    title="ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 - MODELO.pdf" target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 -
+                        MODELO.pdf</label>
+                </a>
+                <a class="manualItem"
+                    href="./resources/pdf/INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO COMPENSACION Y PAGO RECURSOS FONPET LEY 550.pdf"
+                    title="INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO COMPENSACION Y PAGO RECURSOS FONPET LEY 550.pdf"
+                    target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO
+                        COMPENSACION Y PAGO
+                        RECURSOS FONPET LEY 550.pdf</label>
+                </a>
+                <a class="manualItem"
+                    href="./resources/pdf/INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO COMEPNESACION Y PAGO CPP RECURSOS FONPET.pdf"
+                    title="INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO COMEPNESACION Y PAGO CPP RECURSOS FONPET.pdf"
+                    target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO
+                        COMEPNESACION Y PAGO
+                        CPP RECURSOS FONPET.pdf</label>
+                </a>
+                <a class="manualItem" href="./resources/pdf/Calendario Retiro de Recursos FONPET vigencia 2025.pdf"
+                    title="Calendario Retiro de Recursos FONPET vigencia 2025.pdf" target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">Calendario Retiro de Recursos FONPET vigencia 2025.pdf</label>
+                </a>
+                <a class="manualItem" href="./resources/pdf/CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA 2025.pdf"
+                    title="CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA 2025.pdf" target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA
+                        2025.pdf</label>
+                </a>
+                <a class="manualItem" href="./resources/pdf/CARTILLA EXPLICATIVA FONPET 2022.pdf"
+                    title="CARTILLA EXPLICATIVA FONPET 2022.pdf" target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">CARTILLA EXPLICATIVA FONPET 2022.pdf</label>
+                </a>
+                <a class="manualItem" href="./resources/pdf/Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf"
+                    title="Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf" target="_blank">
+                    <div class="imgManual"></div>
+                    <label class="labelManual din-bold">Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf</label>
+                </a>
+            </div>
 
-                                        </label>
-                                        <div class="form px-3">
-                                            <div class="mb-4" id="step_reset1">
-                                                <div class="search-container">
-                                                    <div class="mb-1 text-center">
-                                                        <input type="text" class="input-microsite text-center"
-                                                            placeholder="--- Ingrese email ---" value=""
-                                                            id="txt_EmailReset">
-                                                    </div>
-                                                </div>
-                                                <div class="search-container">
-                                                    <div class="mb-1 text-center">
-                                                        <input type="text" class="input-microsite text-center"
-                                                            placeholder="--- Ingrese NIT ---" value=""
-                                                            id="txt_NitReset">
+            <label class="btnSlideManuals" id="btnSlideManuals" title="Archivos de interés">
+            </label>
+        </div>
+        <div class="overlay" id="overlay"></div>
+        <h2 class="title-m-eecb" id="title-m-eecb">
+            Saldemos nuestras <span class="din-bold">cuentas</span>
+            <div class="arrow"></div>
+        </h2>
+        <div class="row viewContainer active" id="mainView">
+            <div class="col-md-6 position-relative" id="mapImg">
+                <div class="arrow" id="arrowMap"></div>
+            </div>
+            <div class="col-md-6 pt-5 px-4">
+                <div>
+                    <div class="card card-microsite-eecb rounded-5 overflow-hidden border-0 shadow" id="card1">
+                        <div class="overflow-auto" id="containerContentEntity">
+                            <div class="img-card palmas_img"></div>
+                            <h4 class="card-title bg-main-green px-3  text-center">Cargue aquí sus estados
+                                de cuenta</h4>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <div class="select-container text-center" id="selectEntity">
+                                            <label class="label-input">Entidad</label>
+                                            <div class="input-container">
+                                                <input class="input input-microsite" placeholder="---  Buscar  ---">
+                                                <div class="div-options">
+                                                    <div class="container-options">
+                                                        No hay entidades disponibles
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div id="step_reset2">
-                                                <div class="input-container">
-                                                    <label class="label-form">Código de seguridad</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" class="input-form" id="txt_CodeReset"
-                                                            placeholder="Ingrese código">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="messageContainer_Reset" class="messageContainer">
-
-                                            </div>
-                                        </div>
-                                        <div class="d-block w-100 text-center mt-5">
-                                            <button class="btn-m btn-secondary rounded-5 shadow me-2 w-auto"
-                                                id="btnBackViewLogin" type="button">
-                                                Volver
-                                            </button>
-                                            <button class="btn-m btn-submit rounded-5 shadow" id="btnResetPassword"
-                                                type="button">
-                                                Reestablecer
-                                            </button>
                                         </div>
                                     </div>
+                                    <div class="col-md-1"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row viewContainer pt-5" id="registerView">
-                    <div class="col-md-7">
-                        <div class="card card-microsite-eecb card-microsite-eecb2 rounded-4 overflow-hidden border-0 shadow mt-4"
-                            id="card3">
-                            <div class="">
-                                <h4 class="card-title bg-main-green px-3  text-center" id="titleCardRegister"></h4>
-                                <div class="card-body">
-                                    <div class="input-container">
-                                        <label class="label-form">Número de NIT</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" class="input-form" id="txt_NIT"
-                                                placeholder="Ingrese el número de NIT de la entidad">
-                                            <div class="info-icon">
-                                                !
-                                                <div class="tooltip-field">Campo requerido</div>
-                                            </div>
+                <div>
+                    <div class="card card-microsite-eecb rounded-5 overflow-auto border-0 shadow mt-5" id="card2">
+                        <div class="img-card monte_img"></div>
+                        <h4 class="card-title bg-main-green px-3 text-center" id="titleCardLogin">
+                            Consulte estados de cuentas
+                        </h4>
+                        <div class="card-body">
+                            <div class="row show" id="loginContainer">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-10">
+                                    <div class="search-container">
+                                        <div class="mb-1 text-center">
+                                            <label class="label-input w-100 text-center">Usuario</label>
+                                            <input type="text" class="input-microsite text-center"
+                                                placeholder="--- Ingrese usuario ---" value="" id="txt_EmailLogin">
                                         </div>
                                     </div>
-                                    <div class="input-container">
-                                        <label class="label-form">Selecione tipo de entidad</label>
-                                        <div class="input-wrapper">
-                                            <select class="input-form" id="slt_TypeEntity">
-                                                <option value="">Seleccione una opción</option>
-                                                <option value="1">Nación</option>
-                                                <option value="2">Ente territorial</option>
-                                                <option value="3">Otro</option>
-                                            </select>
+                                    <div class="search-container mb-2">
+                                        <div class="mb-1 text-center">
+                                            <label class="label-input w-100 text-center">Contraseña</label>
+                                            <input type="password" class="input-microsite text-center"
+                                                placeholder="--- Ingrese contraseña ---" value=""
+                                                id="txt_PasswordLogin">
                                         </div>
                                     </div>
-                                    <div class="input-container">
-                                        <label class="label-form">Ciudad</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" class="input-form" id="slt_City"
-                                                placeholder="Ingrese ciudad donde se ubica la entidad">
-                                        </div>
-                                    </div>
-                                    <div class="input-container">
-                                        <label class="label-form">Teléfono de contacto directo</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" class="input-form" id="txt_PhoneContact"
-                                                placeholder="Ingrese el número de atención de la entidad">
-                                            <div class="info-icon">
-                                                !
-                                                <div class="tooltip-field">Campo requerido</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-container">
-                                        <label class="label-form">Email de contacto directo</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" class="input-form" id="txt_Email"
-                                                placeholder="Ingrese el correo de atención de la entidad">
-                                            <div class="info-icon">
-                                                !
-                                                <div class="tooltip-field">Campo requerido</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-container">
-                                        <label class="label-form">Confirmación email</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" class="input-form" id="txt_EmailContact"
-                                                placeholder="Confirme el email de contacto directo">
-                                            <div class="info-icon">
-                                                !
-                                                <div class="tooltip-field">Campo requerido, debe ser el mismo valor que el campo de email de contacto directo</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="select-container text-center" id="selectEntities">
-                                        <label class="label-form"> Registre la o las entidades que le adeudan</label>
-                                        <div class="input-container">
-                                            <input class="input input-microsite"
-                                                placeholder="--  Seleccione entidad  --" 
-                                                >
-                                            <div class="div-options">
-                                                <div class="container-options">
-                                                    No hay entidades disponibles
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-container">
-                                        <label class="label-form text-center mt-2">
-                                            Añadir archivos de estados de cuenta
-                                            <div class="info-icon">
-                                                !
-                                                <div class="tooltip-field">Seleccione una entidad, luego dé click en el
-                                                    botón "elegir archivo" <br> y cargue el archivo correspondiente a la
-                                                    entidad seleccionada.</div>
-                                            </div>
-                                        </label>
-                                        <div class="bg-main-green rounded-4 text-light mt-4 mb-1 fileStateAccounts"
-                                            id="fileStateAccounts"
-                                            data-tooltip="Antes de cargar la plantilla debe seleccionar la entidad a la cual se le cargará el documento">
-                                            <input type="file" name="fileInputRegister" id="fileInputRegister"
-                                                class="hidden">
-                                            <label for="fileInputRegister"
-                                                class="label-file rounded-4 text-center mx-4">Elegir
-                                                archivo</label>
-                                            <p class="info-file">
-                                                Descargue, diligencie y cargue en este espacio la
-                                                <a class="link-file" href="./resources/plantilla.xlsx">Plantilla de
-                                                    estados de cuenta</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="entity-list mb-4 text-center" id="containerEntities">
-                                        <div class="flex-center-items h-100 w-100 rounded-4 bg-gray-light">No hay
-                                            entidades seleccionadas</div>
-                                    </div>
-                                    <label class="custom-checkbox my-3">
-                                        <input type="checkbox" id="cbx_Politics" value="1" />
-                                        <span class="checkmark"></span>
-                                        He leído y acepto la <a class="ms-1" target="_blank"
-                                            href="https://www.foncep.gov.co/politicas-de-seguridad-de-la-informacion-y-proteccion-de-datos-personales">
-                                            Política de privacidad y seguridad de la información
-                                        </a>
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-12">
+                                    <div id="messageContainer_Login" class="messageContainer"></div>
+                                </div>
+                                <div class="col-md-12 show-expanded">
+                                    <label class="help-text mb-4 nunito-light">
+                                        ¿Tienes problemas para ingresar?
+                                        <span id="btnResetView">
+                                            Reestablecer contraseña
+                                        </span>
                                     </label>
-                                    <div id="messageContainer" class="messageContainer">
-                                    </div>
                                     <div class="d-block text-center">
-                                        <button class="btn-m btn-secondary rounded-5 shadow me-2" id="btnBack"
-                                            type="button">
-                                            Volver
-                                        </button>
-                                        <button class="btn-m btn-submit rounded-5 shadow" id="btnSendDataRegister"
-                                            type="button">
-                                            Enviar
+                                        <button class="btn-m btn-submit rounded-5 shadow" id="btnLogin" type="button">
+                                            Iniciar sesión
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row viewContainer pt-5" id="messageView">
-                    <div class="col-md-7">
-                        <div
-                            class="card card-microsite-eecb card-microsite-eecb2 rounded-4 overflow-hidden border-0 shadow mt-4">
-                            <div class="overflow-auto">
-                                <h4 class="card-title bg-main-green px-3  text-center" id="titleCardMessage"></h4>
-                                <div class="card-body">
-                                    <div id="bodyCardMessage" class="text-center mb-4">
+                            <div class="row" id="resetPasswordContainer">
+                                <label class="help-text mb-2 nunito-light" id="textHelp">
 
-                                    </div>
-                                    <div class="d-block text-center">
-                                        <button class="btn-m btn-submit rounded-5 shadow" id="btnBackMainView"
-                                            type="button">
-                                            Regresar al sitio web
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row viewContainer pt-5" id="dashboardView">
-                    <div class="col-md-10">
-                        <h4 class="px-3 text-center text-light mt-5 text-e-big" id="titleDashboard"></h4>
-                        <p class="text-center text-light text-e-big din-light" id="textDescription"></p>
-                        <div class="card card-microsite-eecb card-microsite-eecb3 rounded-4 overflow-hidden border-0 shadow mt-4"
-                            id="listEntityContainer">
-                            <div class="overflow-auto">
-                                <div class="card-body">
-                                    <div id="enititiesContainer" class="text-center row">
-
-                                    </div>
-                                    <div id="manageEntityModule">
-                                        <div class="row">
-                                            <div class="col-md-7 px-2" id="entitiesLoad">
-                                                <div id="containerEntitiesLoaded" class="entity-list">
-                                                    Cargando entidades
-                                                </div>
+                                </label>
+                                <div class="form px-3">
+                                    <div class="mb-4" id="step_reset1">
+                                        <div class="search-container">
+                                            <div class="mb-1 text-center">
+                                                <input type="text" class="input-microsite text-center"
+                                                    placeholder="--- Ingrese email ---" value="" id="txt_EmailReset">
                                             </div>
-                                            <div class="col-md-5 px-2 py-3" id="manageModule">
-                                                <div class="select-container text-center" id="selectEntities_Manage">
-                                                    <label class="label-form"> Registre la o las entidades que le
-                                                        adeudan</label>
-                                                    <div class="input-container">
-                                                        <input class="input input-microsite"
-                                                            placeholder="--  Seleccione entidad  --">
-                                                        <div class="div-options">
-                                                            <div class="container-options">
-                                                                No hay entidades disponibles
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="input-container">
-                                                    <label class="label-form text-center mt-2">
-                                                        Añadir archivos de estados de cuenta
-                                                        <div class="info-icon">
-                                                            !
-                                                            <div class="tooltip-field">Seleccione una entidad, luego dé
-                                                                click en el
-                                                                botón "elegir archivo" <br> y cargue el archivo
-                                                                correspondiente a la
-                                                                entidad seleccionada.</div>
-                                                        </div>
-                                                    </label>
-                                                    <div class="bg-main-green rounded-4 text-light mt-4 mb-4 fileStateAccounts"
-                                                        id="fileStateAccounts_Manage"
-                                                        data-tooltip="Seleccione primero una entidad">
-                                                        <input type="file" name="fileInputRegister_Manage"
-                                                            id="fileInputRegister_Manage" class="hidden">
-                                                        <label for="fileInputRegister_Manage"
-                                                            class="label-file rounded-4 text-center mx-4">Elegir
-                                                            archivo</label>
-                                                        <p class="info-file">
-                                                            Descargue, diligencie y cargue en este espacio la
-                                                            <a class="link-file"
-                                                                href="./resources/plantilla.xlsx">Plantilla de
-                                                                estados de cuenta</a>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div id="messageContainer_Manage" class="messageContainer">
-                                                </div>
+                                        </div>
+                                        <div class="search-container">
+                                            <div class="mb-1 text-center">
+                                                <input type="text" class="input-microsite text-center"
+                                                    placeholder="--- Ingrese NIT ---" value="" id="txt_NitReset">
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row px-5">
-                        <div class="card card-microsite-eecb4 rounded-4 overflow-hidden border-0 shadow mt-4 p-0"
-                            id="EntityModalCard">
-                            <div class="overflow-auto">
-                                <h4 class="card-title bg-main-green p-3 text-light m-0" id="titleEntityModal">
-                                </h4>
-                                <div class="card-body p-0">
-                                    <table id="dataEntityModal">
-                                        <tr>
-                                            <td class="w-60 text-center td-r p-0">
-                                                <div class="title-modal mt-2 nunito-extra-bold">Consulte estado de
-                                                    cuenta</div>
-                                            </td>
-                                            <td rowspan="2" class="w-40 text-center border-0 p-2">
-                                                <div class="info-contact">
-                                                    <span class="nunito-extra-bold">Teléfono de contacto</span>
-                                                    <div id="lbl_Phone"></div>
-                                                    <span class="nunito-extra-bold">Correo de contacto</span>
-                                                    <div id="lbl_Email"></div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-60 text-center td-r">
-                                                <div class="link-modal">
-                                                    <a href="#" id="lbl_LinkDocument" target="_blank">Descargue
-                                                        documento</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <div id="step_reset2">
+                                        <div class="input-container">
+                                            <label class="label-form">Código de seguridad</label>
+                                            <div class="input-wrapper">
+                                                <input type="text" class="input-form" id="txt_CodeReset"
+                                                    placeholder="Ingrese código">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="messageContainer_Reset" class="messageContainer">
 
+                                    </div>
+                                </div>
+                                <div class="d-block w-100 text-center mt-5">
+                                    <button class="btn-m btn-secondary rounded-5 shadow me-2 w-auto"
+                                        id="btnBackViewLogin" type="button">
+                                        Volver
+                                    </button>
+                                    <button class="btn-m btn-submit rounded-5 shadow" id="btnResetPassword"
+                                        type="button">
+                                        Reestablecer
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="containerButtons">
-                        <button type="button" class="btn-m shadow" id="btnBackModal">Regresar a realizar otra
-                            consulta</button>
-                        <button type="button" class="btn-logout btn-m shadow" id="btnLogout">SALIR</button>
-                        <button type="button" class="btn-m shadow rounded" id="btnManage">
-                            Gestionar archivos cargados
-                        </button>
-                        <button type="button" class="btn-m shadow rounded hidden" id="btnManageDebts">
-                            Ver registros de adeudos
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <img src="../RECURSOS/MOCKUPS PS/MICROSITIO-CUOTAPARTISTAS-2-5-NUEVO.jpg" alt="">
+        <div class="row viewContainer pt-5" id="registerView">
+            <div class="col-md-7">
+                <div class="card card-microsite-eecb card-microsite-eecb2 rounded-4 overflow-hidden border-0 shadow mt-4"
+                    id="card3">
+                    <div class="">
+                        <h4 class="card-title bg-main-green px-3  text-center" id="titleCardRegister"></h4>
+                        <div class="card-body">
+                            <div class="input-container">
+                                <label class="label-form">Número de NIT</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="input-form" id="txt_NIT"
+                                        placeholder="Ingrese el número de NIT de la entidad">
+                                    <div class="info-icon">
+                                        !
+                                        <div class="tooltip-field">Campo requerido</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-container">
+                                <label class="label-form">Selecione tipo de entidad</label>
+                                <div class="input-wrapper">
+                                    <select class="input-form" id="slt_TypeEntity">
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="1">Nación</option>
+                                        <option value="2">Ente territorial</option>
+                                        <option value="3">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-container">
+                                <label class="label-form">Ciudad</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="input-form" id="slt_City"
+                                        placeholder="Ingrese ciudad donde se ubica la entidad">
+                                </div>
+                            </div>
+                            <div class="input-container">
+                                <label class="label-form">Teléfono de contacto directo</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="input-form" id="txt_PhoneContact"
+                                        placeholder="Ingrese el número de atención de la entidad">
+                                    <div class="info-icon">
+                                        !
+                                        <div class="tooltip-field">Campo requerido</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-container">
+                                <label class="label-form">Email de contacto directo</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="input-form" id="txt_Email"
+                                        placeholder="Ingrese el correo de atención de la entidad">
+                                    <div class="info-icon">
+                                        !
+                                        <div class="tooltip-field">Campo requerido</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-container">
+                                <label class="label-form">Confirmación email</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="input-form" id="txt_EmailContact"
+                                        placeholder="Confirme el email de contacto directo">
+                                    <div class="info-icon">
+                                        !
+                                        <div class="tooltip-field">Campo requerido, debe ser el mismo valor que el campo
+                                            de email de contacto directo</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="select-container text-center" id="selectEntities">
+                                <label class="label-form"> Registre la o las entidades que le adeudan</label>
+                                <div class="input-container">
+                                    <input class="input input-microsite" placeholder="--  Seleccione entidad  --">
+                                    <div class="div-options">
+                                        <div class="container-options">
+                                            No hay entidades disponibles
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-container">
+                                <label class="label-form text-center mt-2">
+                                    Añadir archivos de estados de cuenta
+                                    <div class="info-icon">
+                                        !
+                                        <div class="tooltip-field">Seleccione una entidad, luego dé click en el
+                                            botón "elegir archivo" <br> y cargue el archivo correspondiente a la
+                                            entidad seleccionada.</div>
+                                    </div>
+                                </label>
+                                <div class="bg-main-green rounded-4 text-light mt-4 mb-1 fileStateAccounts"
+                                    id="fileStateAccounts"
+                                    data-tooltip="Antes de cargar la plantilla debe seleccionar la entidad a la cual se le cargará el documento">
+                                    <input type="file" name="fileInputRegister" id="fileInputRegister" class="hidden">
+                                    <label for="fileInputRegister" class="label-file rounded-4 text-center mx-4">Elegir
+                                        archivo</label>
+                                    <p class="info-file">
+                                        Descargue, diligencie y cargue en este espacio la
+                                        <a class="link-file" href="./resources/plantilla.xlsx">Plantilla de
+                                            estados de cuenta</a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="entity-list mb-4 text-center" id="containerEntities">
+                                <div class="flex-center-items h-100 w-100 rounded-4 bg-gray-light">No hay
+                                    entidades seleccionadas</div>
+                            </div>
+                            <label class="custom-checkbox my-3">
+                                <input type="checkbox" id="cbx_Politics" value="1" />
+                                <span class="checkmark"></span>
+                                He leído y acepto la <a class="ms-1" target="_blank"
+                                    href="https://www.foncep.gov.co/politicas-de-seguridad-de-la-informacion-y-proteccion-de-datos-personales">
+                                    Política de privacidad y seguridad de la información
+                                </a>
+                            </label>
+                            <div id="messageContainer" class="messageContainer">
+                            </div>
+                            <div class="d-block text-center">
+                                <button class="btn-m btn-secondary rounded-5 shadow me-2" id="btnBack" type="button">
+                                    Volver
+                                </button>
+                                <button class="btn-m btn-submit rounded-5 shadow" id="btnSendDataRegister"
+                                    type="button">
+                                    Enviar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row viewContainer pt-5" id="messageView">
+            <div class="col-md-7">
+                <div
+                    class="card card-microsite-eecb card-microsite-eecb2 rounded-4 overflow-hidden border-0 shadow mt-4">
+                    <div class="overflow-auto">
+                        <h4 class="card-title bg-main-green px-3  text-center" id="titleCardMessage"></h4>
+                        <div class="card-body">
+                            <div id="bodyCardMessage" class="text-center mb-4">
+
+                            </div>
+                            <div class="d-block text-center">
+                                <button class="btn-m btn-submit rounded-5 shadow" id="btnBackMainView" type="button">
+                                    Regresar al sitio web
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row viewContainer pt-5" id="dashboardView">
+            <div class="col-md-10">
+                <h4 class="px-3 text-center text-light mt-5 text-e-big" id="titleDashboard"></h4>
+                <p class="text-center text-light text-e-big din-light" id="textDescription"></p>
+                <div class="card card-microsite-eecb card-microsite-eecb3 rounded-4 overflow-hidden border-0 shadow mt-4"
+                    id="listEntityContainer">
+                    <div class="overflow-auto">
+                        <div class="card-body">
+                            <div id="enititiesContainer" class="text-center row">
+
+                            </div>
+                            <div id="manageEntityModule">
+                                <div class="row">
+                                    <div class="col-md-7 px-2" id="entitiesLoad">
+                                        <div id="containerEntitiesLoaded" class="entity-list">
+                                            Cargando entidades
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 px-2 py-3" id="manageModule">
+                                        <div class="select-container text-center" id="selectEntities_Manage">
+                                            <label class="label-form"> Registre la o las entidades que le
+                                                adeudan</label>
+                                            <div class="input-container">
+                                                <input class="input input-microsite"
+                                                    placeholder="--  Seleccione entidad  --">
+                                                <div class="div-options">
+                                                    <div class="container-options">
+                                                        No hay entidades disponibles
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="input-container">
+                                            <label class="label-form text-center mt-2">
+                                                Añadir archivos de estados de cuenta
+                                                <div class="info-icon">
+                                                    !
+                                                    <div class="tooltip-field">Seleccione una entidad, luego dé
+                                                        click en el
+                                                        botón "elegir archivo" <br> y cargue el archivo
+                                                        correspondiente a la
+                                                        entidad seleccionada.</div>
+                                                </div>
+                                            </label>
+                                            <div class="bg-main-green rounded-4 text-light mt-4 mb-4 fileStateAccounts"
+                                                id="fileStateAccounts_Manage"
+                                                data-tooltip="Seleccione primero una entidad">
+                                                <input type="file" name="fileInputRegister_Manage"
+                                                    id="fileInputRegister_Manage" class="hidden">
+                                                <label for="fileInputRegister_Manage"
+                                                    class="label-file rounded-4 text-center mx-4">Elegir
+                                                    archivo</label>
+                                                <p class="info-file">
+                                                    Descargue, diligencie y cargue en este espacio la
+                                                    <a class="link-file" href="./resources/plantilla.xlsx">Plantilla de
+                                                        estados de cuenta</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div id="messageContainer_Manage" class="messageContainer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row px-5">
+                <div class="card card-microsite-eecb4 rounded-4 overflow-hidden border-0 shadow mt-4 p-0"
+                    id="EntityModalCard">
+                    <div class="overflow-auto">
+                        <h4 class="card-title bg-main-green p-3 text-light m-0" id="titleEntityModal">
+                        </h4>
+                        <div class="card-body p-0">
+                            <table id="dataEntityModal">
+                                <tr>
+                                    <td class="w-60 text-center td-r p-0">
+                                        <div class="title-modal mt-2 nunito-extra-bold">Consulte estado de
+                                            cuenta</div>
+                                    </td>
+                                    <td rowspan="2" class="w-40 text-center border-0 p-2">
+                                        <div class="info-contact">
+                                            <span class="nunito-extra-bold">Teléfono de contacto</span>
+                                            <div id="lbl_Phone"></div>
+                                            <span class="nunito-extra-bold">Correo de contacto</span>
+                                            <div id="lbl_Email"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="w-60 text-center td-r">
+                                        <div class="link-modal">
+                                            <a href="#" id="lbl_LinkDocument" target="_blank">Descargue
+                                                documento</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="containerButtons">
+                <button type="button" class="btn-m shadow" id="btnBackModal">Regresar a realizar otra
+                    consulta</button>
+                <button type="button" class="btn-logout btn-m shadow" id="btnLogout">SALIR</button>
+                <button type="button" class="btn-m shadow rounded" id="btnManage">
+                    Gestionar archivos cargados
+                </button>
+                <button type="button" class="btn-m shadow rounded hidden" id="btnManageDebts">
+                    Ver registros de adeudos
+                </button>
+            </div>
         </div>
     </div>
     <div id="overlayBlurAll">

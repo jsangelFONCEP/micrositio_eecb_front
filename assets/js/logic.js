@@ -1645,6 +1645,13 @@ class MessageBadgeController {
 document.addEventListener('DOMContentLoaded', async () => {
     _windowL = new Loading();
     _windowO = new OverlayBlur();
+    document.getElementById('btnSlideManuals').addEventListener('click', () => {
+        const manualsView = document.getElementById('manualsView');
+        const classes = manualsView.getAttribute('class');
+        if (classes.includes('expanded'))
+            manualsView.classList.remove('expanded')
+        else manualsView.classList.add('expanded')
+    })
     if (_windowSC && await _windowSC.isValidSession()) {
         VIEW_CONTROLLER.showView('dashboardView');
     } else {
