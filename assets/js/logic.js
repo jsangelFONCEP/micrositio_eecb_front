@@ -495,7 +495,7 @@ class ResetPasswordController {
                 this.messageController.showMessage('Su contraseña ha sido reestablecida satisfactoriamente, se ha enviado un correo electrónico con las nuevas credenciales', 'success');
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000)
+                }, 5000)
             } else
                 this.messageController.showMessage('El código ingresado es incorrecto', 'error');
         }
@@ -848,7 +848,7 @@ class ManageEntityModuleController {
 
     async updateDisplaySelectedEntities() {
         const keys = Object.keys(this.selectedEntities);
-        this.containerEntities.innerHTML = (keys.length > 0) ? '' : '<div class="flex-center-items h-100 w-100">No hay entidades seleccionadas</div>';
+        this.containerEntities.innerHTML = (keys.length > 0) ? '' : '<div class="flex-center-items h-100 w-100 rounded-4 bg-gray-light">No hay entidades seleccionadas</div>';
         const listWithoutFile = [];
         const cry = new _cu();
         keys.forEach(async (item) => {

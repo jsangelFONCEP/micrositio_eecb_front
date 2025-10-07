@@ -12,83 +12,16 @@
 
 <body>
     <div class="pt-2 pb-5 overflow-hidden" id="containerMicrositeEECB">
-        <div class="manualsView" id="manualsView">
-            <div class="containerManuals">
-                <div class="titleManuals">
-                    <label class="title-m-eecb">
-                        Archivos de interés
-                    </label>
-                </div>
-                <a class="manualItem"
-                    href="./resources/pdf/ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE CONVENIOS MHCP.pdf"
-                    title="ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE CONVENIOS MHCP.pdf"
-                    target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE
-                        CONVENIOS
-                        MHCP.pdf</label>
-                </a>
-                <a class="manualItem"
-                    href="./resources/pdf/ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 - MODELO.pdf"
-                    title="ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 - MODELO.pdf" target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 -
-                        MODELO.pdf</label>
-                </a>
-                <a class="manualItem"
-                    href="./resources/pdf/INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO COMPENSACION Y PAGO RECURSOS FONPET LEY 550.pdf"
-                    title="INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO COMPENSACION Y PAGO RECURSOS FONPET LEY 550.pdf"
-                    target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO
-                        COMPENSACION Y PAGO
-                        RECURSOS FONPET LEY 550.pdf</label>
-                </a>
-                <a class="manualItem"
-                    href="./resources/pdf/INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO COMEPNESACION Y PAGO CPP RECURSOS FONPET.pdf"
-                    title="INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO COMEPNESACION Y PAGO CPP RECURSOS FONPET.pdf"
-                    target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO
-                        COMEPNESACION Y PAGO
-                        CPP RECURSOS FONPET.pdf</label>
-                </a>
-                <a class="manualItem" href="./resources/pdf/Calendario Retiro de Recursos FONPET vigencia 2025.pdf"
-                    title="Calendario Retiro de Recursos FONPET vigencia 2025.pdf" target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">Calendario Retiro de Recursos FONPET vigencia 2025.pdf</label>
-                </a>
-                <a class="manualItem" href="./resources/pdf/CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA 2025.pdf"
-                    title="CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA 2025.pdf" target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA
-                        2025.pdf</label>
-                </a>
-                <a class="manualItem" href="./resources/pdf/CARTILLA EXPLICATIVA FONPET 2022.pdf"
-                    title="CARTILLA EXPLICATIVA FONPET 2022.pdf" target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">CARTILLA EXPLICATIVA FONPET 2022.pdf</label>
-                </a>
-                <a class="manualItem" href="./resources/pdf/Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf"
-                    title="Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf" target="_blank">
-                    <div class="imgManual"></div>
-                    <label class="labelManual din-bold">Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf</label>
-                </a>
-            </div>
-
-            <label class="btnSlideManuals" id="btnSlideManuals" title="Archivos de interés">
-            </label>
-        </div>
         <div class="overlay" id="overlay"></div>
         <h2 class="title-m-eecb" id="title-m-eecb">
             Saldemos nuestras <span class="din-bold">cuentas</span>
             <div class="arrow"></div>
         </h2>
         <div class="row viewContainer active" id="mainView">
-            <div class="col-md-6 position-relative" id="mapImg">
+            <div class="position-relative" id="mapImg">
                 <div class="arrow" id="arrowMap"></div>
             </div>
-            <div class="col-md-6 pt-5 px-4 pe-5">
+            <div class="pt-5 px-4 pe-5" id="containerCards">
                 <div>
                     <div class="card card-microsite-eecb rounded-5 overflow-hidden border-0 shadow" id="card1">
                         <div class="overflow-auto" id="containerContentEntity">
@@ -210,7 +143,7 @@
             </div>
         </div>
         <div class="row viewContainer pt-5" id="registerView">
-            <div class="col-md-7">
+            <div id="containerCardRegister">
                 <div class="card card-microsite-eecb card-microsite-eecb2 rounded-4 overflow-hidden border-0 shadow mt-4"
                     id="card3">
                     <div class="">
@@ -291,7 +224,7 @@
                                 </div>
                             </div>
                             <div class="input-container">
-                                <label class="label-form text-center mt-2">
+                                <label class="label-form text-center mt-2 labelFile">
                                     Añadir archivos de estados de cuenta
                                     <div class="info-icon">
                                         !
@@ -301,8 +234,7 @@
                                     </div>
                                 </label>
                                 <div class="bg-main-green rounded-4 text-light mt-4 mb-1 fileStateAccounts"
-                                    id="fileStateAccounts"
-                                    data-tooltip="Antes de cargar la plantilla debe seleccionar la entidad a la cual se le cargará el documento">
+                                    id="fileStateAccounts" data-tooltip="Seleccione primero una entidad">
                                     <input type="file" name="fileInputRegister" id="fileInputRegister" class="hidden">
                                     <label for="fileInputRegister" class="label-file rounded-4 text-center mx-4">Elegir
                                         archivo</label>
@@ -374,11 +306,6 @@
                             </div>
                             <div id="manageEntityModule">
                                 <div class="row">
-                                    <div class="col-md-7 px-2" id="entitiesLoad">
-                                        <div id="containerEntitiesLoaded" class="entity-list">
-                                            Cargando entidades
-                                        </div>
-                                    </div>
                                     <div class="col-md-5 px-2 py-3" id="manageModule">
                                         <div class="select-container text-center" id="selectEntities_Manage">
                                             <label class="label-form"> Registre la o las entidades que le
@@ -423,13 +350,18 @@
                                         <div id="messageContainer_Manage" class="messageContainer">
                                         </div>
                                     </div>
+                                    <div class="col-md-7 px-2" id="entitiesLoad">
+                                        <div id="containerEntitiesLoaded" class="entity-list">
+                                            Cargando entidades
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row px-5">
+            <div class="row">
                 <div class="card card-microsite-eecb4 rounded-4 overflow-hidden border-0 shadow mt-4 p-0"
                     id="EntityModalCard">
                     <div class="overflow-auto">
@@ -468,16 +400,85 @@
             <div id="containerButtons">
                 <button type="button" class="btn-m shadow" id="btnBackModal">Regresar a realizar otra
                     consulta</button>
-                <button type="button" class="btn-logout btn-m shadow" id="btnLogout">SALIR</button>
                 <button type="button" class="btn-m shadow rounded" id="btnManage">
                     Gestionar archivos cargados
                 </button>
                 <button type="button" class="btn-m shadow rounded hidden" id="btnManageDebts">
                     Ver registros de adeudos
                 </button>
+                <button type="button" class="btn-logout btn-m shadow" id="btnLogout">SALIR</button>
             </div>
         </div>
     </div>
+
+    <div class="manualsView" id="manualsView">
+        <div class="containerManuals">
+            <div class="titleManuals">
+                <label class="title-m-eecb">
+                    Archivos de interés
+                </label>
+            </div>
+            <a class="manualItem"
+                href="./resources/pdf/ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE CONVENIOS MHCP.pdf"
+                title="ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE CONVENIOS MHCP.pdf"
+                target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016- MODELOS DE
+                    CONVENIOS
+                    MHCP.pdf</label>
+            </a>
+            <a class="manualItem"
+                href="./resources/pdf/ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 - MODELO.pdf"
+                title="ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 - MODELO.pdf" target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">ANEXOS_INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016 -
+                    MODELO.pdf</label>
+            </a>
+            <a class="manualItem"
+                href="./resources/pdf/INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO COMPENSACION Y PAGO RECURSOS FONPET LEY 550.pdf"
+                title="INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO COMPENSACION Y PAGO RECURSOS FONPET LEY 550.pdf"
+                target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">INSTRUCTIVO OPERATIVO CONJUNTO No. 01 DE 2016- PROCEDIMIENTO
+                    COMPENSACION Y PAGO
+                    RECURSOS FONPET LEY 550.pdf</label>
+            </a>
+            <a class="manualItem"
+                href="./resources/pdf/INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO COMEPNESACION Y PAGO CPP RECURSOS FONPET.pdf"
+                title="INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO COMEPNESACION Y PAGO CPP RECURSOS FONPET.pdf"
+                target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">INSTRUCTIVO OPERATIVO CONJUNTO No. 02 DE 2016-PROCEDIMIENTO
+                    COMEPNESACION Y PAGO
+                    CPP RECURSOS FONPET.pdf</label>
+            </a>
+            <a class="manualItem" href="./resources/pdf/Calendario Retiro de Recursos FONPET vigencia 2025.pdf"
+                title="Calendario Retiro de Recursos FONPET vigencia 2025.pdf" target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">Calendario Retiro de Recursos FONPET vigencia 2025.pdf</label>
+            </a>
+            <a class="manualItem" href="./resources/pdf/CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA 2025.pdf"
+                title="CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA 2025.pdf" target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">CARTA CIRCULAR TEMAS RELATIVOS AL FONPET VIGENCIA
+                    2025.pdf</label>
+            </a>
+            <a class="manualItem" href="./resources/pdf/CARTILLA EXPLICATIVA FONPET 2022.pdf"
+                title="CARTILLA EXPLICATIVA FONPET 2022.pdf" target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">CARTILLA EXPLICATIVA FONPET 2022.pdf</label>
+            </a>
+            <a class="manualItem" href="./resources/pdf/Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf"
+                title="Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf" target="_blank">
+                <div class="imgManual"></div>
+                <label class="labelManual din-bold">Manual_Usuario_Liquidador_Cuotas_Partes - PASIVOCOL.pdf</label>
+            </a>
+        </div>
+
+        <label class="btnSlideManuals" id="btnSlideManuals" title="Archivos de interés">
+        </label>
+    </div>
+
     <div id="overlayBlurAll">
 
     </div>
